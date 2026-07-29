@@ -1,0 +1,20 @@
+name: Bug
+about: Report incorrect or unexpected behaviour
+labels: ["type: bug"]
+body:
+  - type: textarea
+    attributes:
+      label: Observed behaviour
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction and evidence
+      description: Include version, environment, steps and sanitised evidence.
+    validations:
+      required: true
