@@ -4,7 +4,7 @@
 
 FieldOps Hub is a portfolio-grade multi-tenant field service operations platform for managing customers, work orders, technician assignments, attachments, approvals and audit records.
 
-> Status: Phase 1 foundation complete. Business capabilities are introduced incrementally through reviewed pull requests.
+> Status: Phase 2 in progress. Tenant data boundaries and the persistent domain model are being introduced through reviewed checkpoints.
 
 ## Why this project exists
 
@@ -21,6 +21,7 @@ The project demonstrates enterprise product engineering rather than a basic CRUD
 ## Documentation
 
 - [Project charter](docs/project-charter.md)
+- [Phase 2 plan](docs/phases/phase-02-plan.md)
 - [Architecture](docs/architecture/)
 - [Decision records](docs/decisions/)
 - [Test strategy](docs/testing/test-strategy.md)
