@@ -9,3 +9,6 @@ Portfolio evidence is grouped by phase. Screenshots are sanitised and must not e
 - GitHub Project
 - Merged pull requests
 - Successful continuous integration
+- Phase 1 release page and final completion report
+
+See [Phase 1 completion report](phase-01-completion-report.md).
