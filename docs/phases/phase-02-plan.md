@@ -19,7 +19,7 @@ Introduce a persistent, tenant-aware data model for FieldOps Hub before authenti
 | Checkpoint | Scope | Status |
 |---|---|---|
 | CP1 | Tenant boundaries, relational model, ADR and test plan | Complete |
-| CP2 | Domain entities and EF Core persistence structure | In progress |
+| CP2 | Domain entities and EF Core persistence structure | In review |
 | CP3 | Migration, database constraints and fictional seed data | Planned |
 | CP4 | PostgreSQL tenant-isolation integration tests and CI | Planned |
 | CP5 | Evidence, retrospective and v0.2.0 release | Planned |
