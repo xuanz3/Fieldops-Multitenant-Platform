@@ -1,6 +1,8 @@
 using FieldOps.Domain.Customers;
+using FieldOps.Domain.Identity;
 using FieldOps.Domain.Tenants;
 using FieldOps.Domain.WorkOrders;
+using FieldOps.Infrastructure.Identity;
 using FieldOps.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -9,6 +11,30 @@ namespace FieldOps.IntegrationTests;
 
 public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
 {
+    public const string TestPassword =
+        "FieldOps-Test-2026!";
+
+    public const string NorthsideTenantSlug =
+        "northside-property-services";
+
+    public const string BaysideTenantSlug =
+        "bayside-facility-group";
+
+    public const string NorthsideAdminEmail =
+        "admin@northside.example.test";
+
+    public const string NorthsideDispatcherEmail =
+        "dispatcher@northside.example.test";
+
+    public const string NorthsideTechnicianEmail =
+        "technician@northside.example.test";
+
+    public const string NorthsideClientEmail =
+        "client@northside.example.test";
+
+    public const string BaysideAdminEmail =
+        "admin@bayside.example.test";
+
     public static readonly Guid NorthsideTenantId =
         Guid.Parse("11111111-1111-1111-1111-111111111111");
 
@@ -27,35 +53,43 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
     private string? _adminConnectionString;
     private string? _databaseName;
 
-    public string ConnectionString { get; private set; } = string.Empty;
+    public string ConnectionString { get; private set; } =
+        string.Empty;
 
     public async Task InitializeAsync()
     {
         var baseConnectionString =
-            Environment.GetEnvironmentVariable("FIELDOPS_TEST_CONNECTION");
+            Environment.GetEnvironmentVariable(
+                "FIELDOPS_TEST_CONNECTION");
 
-        if (string.IsNullOrWhiteSpace(baseConnectionString))
+        if (string.IsNullOrWhiteSpace(
+                baseConnectionString))
         {
             throw new InvalidOperationException(
                 "FIELDOPS_TEST_CONNECTION must point to a real PostgreSQL service.");
         }
 
         var baseBuilder =
-            new NpgsqlConnectionStringBuilder(baseConnectionString);
+            new NpgsqlConnectionStringBuilder(
+                baseConnectionString);
 
-        _databaseName = $"fieldops_it_{Guid.NewGuid():N}";
+        _databaseName =
+            $"fieldops_it_{Guid.NewGuid():N}";
 
         var adminBuilder =
-            new NpgsqlConnectionStringBuilder(baseConnectionString)
+            new NpgsqlConnectionStringBuilder(
+                baseConnectionString)
             {
                 Database = baseBuilder.Database,
                 Pooling = false
             };
 
-        _adminConnectionString = adminBuilder.ConnectionString;
+        _adminConnectionString =
+            adminBuilder.ConnectionString;
 
         await using (var adminConnection =
-                     new NpgsqlConnection(_adminConnectionString))
+                     new NpgsqlConnection(
+                         _adminConnectionString))
         {
             await adminConnection.OpenAsync();
 
@@ -68,20 +102,25 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
         }
 
         var testBuilder =
-            new NpgsqlConnectionStringBuilder(baseConnectionString)
+            new NpgsqlConnectionStringBuilder(
+                baseConnectionString)
             {
                 Database = _databaseName,
                 Pooling = false
             };
 
-        ConnectionString = testBuilder.ConnectionString;
+        ConnectionString =
+            testBuilder.ConnectionString;
 
-        await using var dbContext = CreateDbContext(null);
+        await using var dbContext =
+            CreateDbContext(null);
+
         await dbContext.Database.MigrateAsync();
         await SeedAsync(dbContext);
     }
 
-    public FieldOpsDbContext CreateDbContext(Guid? tenantId)
+    public FieldOpsDbContext CreateDbContext(
+        Guid? tenantId)
     {
         var options =
             new DbContextOptionsBuilder<FieldOpsDbContext>()
@@ -96,8 +135,10 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        if (string.IsNullOrWhiteSpace(_adminConnectionString) ||
-            string.IsNullOrWhiteSpace(_databaseName))
+        if (string.IsNullOrWhiteSpace(
+                _adminConnectionString) ||
+            string.IsNullOrWhiteSpace(
+                _databaseName))
         {
             return;
         }
@@ -105,7 +146,8 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
         NpgsqlConnection.ClearAllPools();
 
         await using var adminConnection =
-            new NpgsqlConnection(_adminConnectionString);
+            new NpgsqlConnection(
+                _adminConnectionString);
 
         await adminConnection.OpenAsync();
 
@@ -123,7 +165,8 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
                 "databaseName",
                 _databaseName);
 
-            await terminateCommand.ExecuteNonQueryAsync();
+            await terminateCommand
+                .ExecuteNonQueryAsync();
         }
 
         await using var dropCommand =
@@ -134,7 +177,8 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
         await dropCommand.ExecuteNonQueryAsync();
     }
 
-    private static async Task SeedAsync(FieldOpsDbContext dbContext)
+    private static async Task SeedAsync(
+        FieldOpsDbContext dbContext)
     {
         var timestamp =
             new DateTimeOffset(
@@ -149,13 +193,60 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
         dbContext.Tenants.AddRange(
             new Tenant(
                 "Northside Property Services",
-                "northside-property-services",
+                NorthsideTenantSlug,
                 NorthsideTenantId,
                 timestamp),
             new Tenant(
                 "Bayside Facility Group",
-                "bayside-facility-group",
+                BaysideTenantSlug,
                 BaysideTenantId,
+                timestamp));
+
+        await dbContext.SaveChangesAsync();
+
+        var passwordHasher =
+            new Pbkdf2PasswordHasher();
+
+        dbContext.UserAccounts.AddRange(
+            new UserAccount(
+                NorthsideTenantId,
+                NorthsideAdminEmail,
+                "Northside Admin",
+                passwordHasher.Hash(TestPassword),
+                UserRole.TenantAdmin,
+                Guid.Parse("11111111-1111-1111-1111-111111130001"),
+                timestamp),
+            new UserAccount(
+                NorthsideTenantId,
+                NorthsideDispatcherEmail,
+                "Northside Dispatcher",
+                passwordHasher.Hash(TestPassword),
+                UserRole.Dispatcher,
+                Guid.Parse("11111111-1111-1111-1111-111111130002"),
+                timestamp),
+            new UserAccount(
+                NorthsideTenantId,
+                NorthsideTechnicianEmail,
+                "Northside Technician",
+                passwordHasher.Hash(TestPassword),
+                UserRole.Technician,
+                Guid.Parse("11111111-1111-1111-1111-111111130003"),
+                timestamp),
+            new UserAccount(
+                NorthsideTenantId,
+                NorthsideClientEmail,
+                "Northside Client",
+                passwordHasher.Hash(TestPassword),
+                UserRole.Client,
+                Guid.Parse("11111111-1111-1111-1111-111111130004"),
+                timestamp),
+            new UserAccount(
+                BaysideTenantId,
+                BaysideAdminEmail,
+                "Bayside Admin",
+                passwordHasher.Hash(TestPassword),
+                UserRole.TenantAdmin,
+                Guid.Parse("22222222-2222-2222-2222-222222230001"),
                 timestamp));
 
         await dbContext.SaveChangesAsync();
