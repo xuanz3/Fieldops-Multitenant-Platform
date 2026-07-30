@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\backend\FieldOps.Domain\FieldOps.Domain.csproj" />
+    <ProjectReference Include="..\..\src\backend\FieldOps.Infrastructure\FieldOps.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

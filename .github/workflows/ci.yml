@@ -31,7 +31,7 @@ jobs:
           --verbosity normal
 
   postgres-integration:
-    name: PostgreSQL tenant-isolation tests
+    name: PostgreSQL integration and API security tests
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -62,7 +62,7 @@ jobs:
           tests/FieldOps.IntegrationTests/FieldOps.IntegrationTests.csproj
           --configuration Release
           --no-restore
-      - name: Run PostgreSQL integration tests
+      - name: Run PostgreSQL and API security tests
         run: >
           dotnet test
           tests/FieldOps.IntegrationTests/FieldOps.IntegrationTests.csproj
