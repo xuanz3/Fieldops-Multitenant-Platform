@@ -4,7 +4,7 @@
 
 FieldOps Hub is a portfolio-grade multi-tenant field service operations platform for managing customers, work orders, technician assignments, attachments, approvals and audit records.
 
-> Status: Phase 2 in progress. Tenant data boundaries and the persistent domain model are being introduced through reviewed checkpoints.
+> Status: Phase 2 in progress. Tenant boundaries are designed, while the domain entities and PostgreSQL persistence layer are being introduced through reviewed checkpoints.
 
 ## Why this project exists
 
@@ -18,6 +18,14 @@ The project demonstrates enterprise product engineering rather than a basic CRUD
 - Docker Compose local environment
 - GitHub Actions quality gates
 
+## Development approach
+
+Each phase is delivered through several reviewable checkpoints. A checkpoint normally contains a focused issue set, a feature branch, automated validation and one pull request. Pull requests remain open until their scope and CI evidence have been reviewed.
+
+## Deployment strategy
+
+FieldOps Hub is designed to run locally at no cost using Docker. Cloud environments are optional, replaceable and deployed only when an online demonstration is required. Azure is the initial demonstration target, not a permanent application dependency.
+
 ## Documentation
 
 - [Project charter](docs/project-charter.md)
@@ -29,4 +37,4 @@ The project demonstrates enterprise product engineering rather than a basic CRUD
 
 ## Current limitations
 
-Authentication, tenant persistence and the full work order workflow are intentionally scheduled for later phases. Phase 1 proves project governance, architecture foundations and repeatable validation.
+Authentication, role-based authorization and the complete work-order API are not implemented yet. Phase 2 is introducing tenant-aware PostgreSQL persistence through small, reviewed checkpoints.
