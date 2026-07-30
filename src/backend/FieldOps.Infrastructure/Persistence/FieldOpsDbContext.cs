@@ -1,5 +1,6 @@
 using FieldOps.Application.Tenancy;
 using FieldOps.Domain.Customers;
+using FieldOps.Domain.Identity;
 using FieldOps.Domain.Tenants;
 using FieldOps.Domain.WorkOrders;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,8 @@ public sealed class FieldOpsDbContext : DbContext
 
     public DbSet<Customer> Customers => Set<Customer>();
 
+    public DbSet<UserAccount> UserAccounts => Set<UserAccount>();
+
     public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
 
     private Guid? ActiveTenantId => _tenantContext.TenantId;
@@ -38,5 +41,9 @@ public sealed class FieldOpsDbContext : DbContext
         modelBuilder.Entity<WorkOrder>()
             .HasQueryFilter(workOrder =>
                 ActiveTenantId == workOrder.TenantId);
+
+        modelBuilder.Entity<UserAccount>()
+            .HasQueryFilter(user =>
+                ActiveTenantId == user.TenantId);
     }
 }
