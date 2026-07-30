@@ -33,12 +33,10 @@ public sealed class FieldOpsDbContext : DbContext
 
         modelBuilder.Entity<Customer>()
             .HasQueryFilter(customer =>
-                ActiveTenantId.HasValue &&
-                customer.TenantId == ActiveTenantId.Value);
+                ActiveTenantId == customer.TenantId);
 
         modelBuilder.Entity<WorkOrder>()
             .HasQueryFilter(workOrder =>
-                ActiveTenantId.HasValue &&
-                workOrder.TenantId == ActiveTenantId.Value);
+                ActiveTenantId == workOrder.TenantId);
     }
 }
