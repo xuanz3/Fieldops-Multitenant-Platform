@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   backend:
-    name: Backend build and tests
+    name: Backend build and unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,8 +22,53 @@ jobs:
         run: dotnet restore FieldOps.sln
       - name: Build
         run: dotnet build FieldOps.sln --configuration Release --no-restore
-      - name: Test
-        run: dotnet test FieldOps.sln --configuration Release --no-build --verbosity normal
+      - name: Unit tests
+        run: >
+          dotnet test
+          tests/FieldOps.UnitTests/FieldOps.UnitTests.csproj
+          --configuration Release
+          --no-build
+          --verbosity normal
+
+  postgres-integration:
+    name: PostgreSQL tenant-isolation tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: fieldops
+          POSTGRES_USER: fieldops
+          POSTGRES_PASSWORD: fieldops_test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fieldops -d fieldops"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      FIELDOPS_TEST_CONNECTION: Host=localhost;Port=5432;Database=fieldops;Username=fieldops;Password=fieldops_test_password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore
+        run: dotnet restore FieldOps.sln
+      - name: Build integration tests
+        run: >
+          dotnet build
+          tests/FieldOps.IntegrationTests/FieldOps.IntegrationTests.csproj
+          --configuration Release
+          --no-restore
+      - name: Run PostgreSQL integration tests
+        run: >
+          dotnet test
+          tests/FieldOps.IntegrationTests/FieldOps.IntegrationTests.csproj
+          --configuration Release
+          --no-build
+          --verbosity normal
 
   frontend:
     name: Frontend lint and build
