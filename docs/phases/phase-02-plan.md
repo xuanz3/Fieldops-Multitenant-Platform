@@ -21,8 +21,8 @@ Introduce a persistent, tenant-aware data model for FieldOps Hub before authenti
 | CP1 | Tenant boundaries, relational model, ADR and test plan | Complete |
 | CP2 | Domain entities and EF Core persistence structure | Complete |
 | CP3 | Migration, database constraints and fictional seed data | Complete |
-| CP4 | PostgreSQL tenant-isolation integration tests and CI | In review |
-| CP5 | Evidence, retrospective and v0.2.0 release | Planned |
+| CP4 | PostgreSQL tenant-isolation integration tests and CI | Complete |
+| CP5 | Retrospective, repository policy and v0.2.0 release | Complete |
 
 ## Acceptance criteria
 
