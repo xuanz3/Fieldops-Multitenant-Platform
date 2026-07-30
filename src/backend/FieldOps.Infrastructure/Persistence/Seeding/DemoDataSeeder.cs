@@ -1,4 +1,6 @@
+using FieldOps.Application.Identity;
 using FieldOps.Domain.Customers;
+using FieldOps.Domain.Identity;
 using FieldOps.Domain.Tenants;
 using FieldOps.Domain.WorkOrders;
 using Microsoft.EntityFrameworkCore;
@@ -11,13 +13,18 @@ public sealed class DemoDataSeeder
         new(2026, 7, 1, 0, 0, 0, TimeSpan.Zero);
 
     private readonly FieldOpsDbContext _dbContext;
+    private readonly IPasswordHasher _passwordHasher;
 
-    public DemoDataSeeder(FieldOpsDbContext dbContext)
+    public DemoDataSeeder(
+        FieldOpsDbContext dbContext,
+        IPasswordHasher passwordHasher)
     {
         _dbContext = dbContext;
+        _passwordHasher = passwordHasher;
     }
 
-    public async Task SeedAsync(CancellationToken cancellationToken = default)
+    public async Task SeedAsync(
+        CancellationToken cancellationToken = default)
     {
         await AddTenantIfMissingAsync(
             new Tenant(
@@ -32,6 +39,63 @@ public sealed class DemoDataSeeder
                 "Bayside Facility Group",
                 "bayside-facility-group",
                 DemoDataIds.BaysideTenant,
+                SeedTimestamp),
+            cancellationToken);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        await AddUserIfMissingAsync(
+            new UserAccount(
+                DemoDataIds.NorthsideTenant,
+                "admin@northside.example.test",
+                "Northside Tenant Admin",
+                _passwordHasher.Hash(DemoCredentials.Password),
+                UserRole.TenantAdmin,
+                DemoDataIds.NorthsideAdminUser,
+                SeedTimestamp),
+            cancellationToken);
+
+        await AddUserIfMissingAsync(
+            new UserAccount(
+                DemoDataIds.NorthsideTenant,
+                "dispatcher@northside.example.test",
+                "Northside Dispatcher",
+                _passwordHasher.Hash(DemoCredentials.Password),
+                UserRole.Dispatcher,
+                DemoDataIds.NorthsideDispatcherUser,
+                SeedTimestamp),
+            cancellationToken);
+
+        await AddUserIfMissingAsync(
+            new UserAccount(
+                DemoDataIds.NorthsideTenant,
+                "technician@northside.example.test",
+                "Northside Technician",
+                _passwordHasher.Hash(DemoCredentials.Password),
+                UserRole.Technician,
+                DemoDataIds.NorthsideTechnicianUser,
+                SeedTimestamp),
+            cancellationToken);
+
+        await AddUserIfMissingAsync(
+            new UserAccount(
+                DemoDataIds.NorthsideTenant,
+                "client@northside.example.test",
+                "Northside Client",
+                _passwordHasher.Hash(DemoCredentials.Password),
+                UserRole.Client,
+                DemoDataIds.NorthsideClientUser,
+                SeedTimestamp),
+            cancellationToken);
+
+        await AddUserIfMissingAsync(
+            new UserAccount(
+                DemoDataIds.BaysideTenant,
+                "admin@bayside.example.test",
+                "Bayside Tenant Admin",
+                _passwordHasher.Hash(DemoCredentials.Password),
+                UserRole.TenantAdmin,
+                DemoDataIds.BaysideAdminUser,
                 SeedTimestamp),
             cancellationToken);
 
@@ -115,6 +179,20 @@ public sealed class DemoDataSeeder
                 cancellationToken))
         {
             _dbContext.Tenants.Add(tenant);
+        }
+    }
+
+    private async Task AddUserIfMissingAsync(
+        UserAccount user,
+        CancellationToken cancellationToken)
+    {
+        if (!await _dbContext.UserAccounts
+                .IgnoreQueryFilters()
+                .AnyAsync(
+                    existing => existing.Id == user.Id,
+                    cancellationToken))
+        {
+            _dbContext.UserAccounts.Add(user);
         }
     }
 

@@ -25,4 +25,19 @@ public static class DemoDataIds
 
     public static readonly Guid BaysideWorkOrderOne =
         Guid.Parse("22222222-2222-2222-2222-222222220101");
+
+    public static readonly Guid NorthsideAdminUser =
+        Guid.Parse("11111111-1111-1111-1111-111111130001");
+
+    public static readonly Guid NorthsideDispatcherUser =
+        Guid.Parse("11111111-1111-1111-1111-111111130002");
+
+    public static readonly Guid NorthsideTechnicianUser =
+        Guid.Parse("11111111-1111-1111-1111-111111130003");
+
+    public static readonly Guid NorthsideClientUser =
+        Guid.Parse("11111111-1111-1111-1111-111111130004");
+
+    public static readonly Guid BaysideAdminUser =
+        Guid.Parse("22222222-2222-2222-2222-222222230001");
 }
