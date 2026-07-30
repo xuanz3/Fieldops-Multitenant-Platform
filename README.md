@@ -4,20 +4,26 @@
 
 FieldOps Hub is a portfolio-grade multi-tenant field service operations platform for managing customers, work orders, technician assignments, attachments, approvals and audit records.
 
-> Status: Phase 2 complete. The project now has a tested PostgreSQL multi-tenant data foundation. Authentication and complete business APIs are scheduled for later phases.
+> Status: Phase 3 complete. The platform now has a tested PostgreSQL tenant boundary, tenant-aware JWT authentication and role-based API authorisation.
 
 ## Current capabilities
 
-- Validated Tenant, Customer and WorkOrder domain entities
-- Controlled WorkOrder state transitions
-- PostgreSQL persistence through Entity Framework Core
-- Versioned database migrations
-- Tenant-scoped query filtering
-- Database-enforced tenant/customer relationship boundaries
+- Tenant, Customer, WorkOrder and UserAccount domain entities
+- PostgreSQL persistence and versioned migrations
+- Tenant-scoped query filtering and relationship constraints
+- PBKDF2 password hashing
+- JWT access-token issuance and validation
+- Signed tenant identity
+- Tenant Admin, Dispatcher, Technician and Client roles
+- Role-protected API endpoints
 - Fictional two-tenant demonstration data
-- Unit tests and real PostgreSQL integration tests
+- Unit, PostgreSQL and HTTP API security tests
 - GitHub Actions quality gates
 - Local-first, cloud-portable architecture
+
+## Verified security behaviour
+
+The automated suite proves tenant-only database queries, cross-tenant relationship rejection, 401 authentication failures, 403 role failures, signed tenant identity, tenant-header spoofing resistance, clean dependency scanning and the final 15-image policy.
 
 ## Architecture
 
@@ -27,40 +33,22 @@ FieldOps Hub is a portfolio-grade multi-tenant field service operations platform
 - Docker-based local services
 - GitHub Actions continuous integration
 
-## Verified multi-tenant behaviour
-
-The PostgreSQL integration suite proves that:
-
-1. A tenant reads only its own Customer and WorkOrder rows.
-2. Missing tenant context returns no tenant-owned business rows.
-3. A tenant cannot fetch another tenant's known work order.
-4. Different tenants may use the same business reference.
-5. Duplicate references inside one tenant are rejected.
-6. Cross-tenant Customer and WorkOrder relationships are rejected.
-
 ## Development approach
 
-Each phase is delivered through focused issues, branches, automated validation and reviewable pull requests.
+Each Phase is delivered as one complete branch, one main pull request, full automated validation, documentation and a versioned release.
 
-The repository retains no phase-by-phase screenshot archive. A maximum of 15 final portfolio images may be stored in `docs/evidence/final/`.
-
-## Deployment strategy
-
-FieldOps Hub runs locally without paid cloud infrastructure. Cloud environments are optional, replaceable and deployed only when an online demonstration is required. Azure is the initial demonstration target rather than a permanent application dependency.
+The repository does not retain process screenshots. A maximum of 15 final product images may be stored in `docs/evidence/final/`.
 
 ## Documentation
 
 - [Project charter](docs/project-charter.md)
-- [Phase 2 plan](docs/phases/phase-02-plan.md)
 - [Phase 2 retrospective](docs/phases/phase-02-retrospective.md)
-- [v0.2.0 release notes](docs/releases/v0.2.0.md)
-- [Architecture](docs/architecture/)
-- [Decision records](docs/decisions/)
-- [Test strategy](docs/testing/test-strategy.md)
-- [PostgreSQL integration results](docs/testing/phase-02-integration-test-results.md)
-- [Local development](docs/operations/local-development.md)
+- [Phase 3 authentication and authorisation](docs/phases/phase-03-authentication-authorisation.md)
+- [Token-derived tenant decision](docs/decisions/ADR-006-token-derived-tenant-context.md)
+- [Phase 3 security tests](docs/testing/phase-03-security-test-results.md)
+- [v0.3.0 release notes](docs/releases/v0.3.0.md)
 - [Final screenshot plan](docs/evidence/FINAL_SCREENSHOT_PLAN.md)
 
 ## Current limitations
 
-Authentication, role-based authorisation, complete Customer and WorkOrder APIs, attachments, audit persistence, reporting and cloud deployment are not implemented yet.
+Complete Customer and WorkOrder APIs, assignment workflow, attachments, audit persistence, reporting, refresh tokens, MFA and cloud deployment are not implemented yet.

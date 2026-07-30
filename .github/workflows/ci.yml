@@ -31,7 +31,7 @@ jobs:
           --verbosity normal
 
   postgres-integration:
-    name: PostgreSQL tenant-isolation tests
+    name: PostgreSQL integration and API security tests
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -49,6 +49,10 @@ jobs:
           --health-retries 12
     env:
       FIELDOPS_TEST_CONNECTION: Host=localhost;Port=5432;Database=fieldops;Username=fieldops;Password=fieldops_test_password
+      ConnectionStrings__FieldOps: Host=localhost;Port=5432;Database=fieldops;Username=fieldops;Password=fieldops_test_password
+      Authentication__Jwt__Issuer: FieldOps.IntegrationTests
+      Authentication__Jwt__Audience: FieldOps.IntegrationTests.Client
+      Authentication__Jwt__SigningKey: fieldops-ci-integration-tests-signing-key-2026-at-least-forty-eight-characters
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -62,7 +66,7 @@ jobs:
           tests/FieldOps.IntegrationTests/FieldOps.IntegrationTests.csproj
           --configuration Release
           --no-restore
-      - name: Run PostgreSQL integration tests
+      - name: Run PostgreSQL and API security tests
         run: >
           dotnet test
           tests/FieldOps.IntegrationTests/FieldOps.IntegrationTests.csproj
