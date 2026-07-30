@@ -49,6 +49,7 @@ jobs:
           --health-retries 12
     env:
       FIELDOPS_TEST_CONNECTION: Host=localhost;Port=5432;Database=fieldops;Username=fieldops;Password=fieldops_test_password
+      ConnectionStrings__FieldOps: Host=localhost;Port=5432;Database=fieldops;Username=fieldops;Password=fieldops_test_password
       Authentication__Jwt__Issuer: FieldOps.IntegrationTests
       Authentication__Jwt__Audience: FieldOps.IntegrationTests.Client
       Authentication__Jwt__SigningKey: fieldops-ci-integration-tests-signing-key-2026-at-least-forty-eight-characters
