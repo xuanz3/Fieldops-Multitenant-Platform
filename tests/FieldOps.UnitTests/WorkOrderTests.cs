@@ -7,25 +7,57 @@ public sealed class WorkOrderTests
     [Fact]
     public void New_work_order_starts_as_submitted()
     {
-        var workOrder = new WorkOrder { TenantId = Guid.NewGuid() };
+        var workOrder = CreateWorkOrder();
+
         Assert.Equal(WorkOrderStatus.Submitted, workOrder.Status);
+        Assert.Equal(1, workOrder.Version);
     }
 
     [Fact]
     public void Submitted_work_order_can_be_assigned()
     {
-        var workOrder = new WorkOrder { TenantId = Guid.NewGuid() };
+        var workOrder = CreateWorkOrder();
+
         workOrder.TransitionTo(WorkOrderStatus.Assigned);
+
         Assert.Equal(WorkOrderStatus.Assigned, workOrder.Status);
+        Assert.Equal(2, workOrder.Version);
     }
 
     [Fact]
     public void Submitted_work_order_cannot_skip_to_completed()
     {
-        var workOrder = new WorkOrder { TenantId = Guid.NewGuid() };
+        var workOrder = CreateWorkOrder();
+
         var exception = Assert.Throws<InvalidOperationException>(
             () => workOrder.TransitionTo(WorkOrderStatus.Completed));
+
         Assert.Contains("Submitted", exception.Message);
         Assert.Equal(WorkOrderStatus.Submitted, workOrder.Status);
+        Assert.Equal(1, workOrder.Version);
     }
+
+    [Fact]
+    public void Work_order_preserves_tenant_and_customer_ownership()
+    {
+        var tenantId = Guid.NewGuid();
+        var customerId = Guid.NewGuid();
+
+        var workOrder = new WorkOrder(
+            tenantId,
+            customerId,
+            "wo-1001",
+            "Repair leaking tap");
+
+        Assert.Equal(tenantId, workOrder.TenantId);
+        Assert.Equal(customerId, workOrder.CustomerId);
+        Assert.Equal("WO-1001", workOrder.Reference);
+    }
+
+    private static WorkOrder CreateWorkOrder() =>
+        new(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "WO-1001",
+            "Repair leaking tap");
 }
