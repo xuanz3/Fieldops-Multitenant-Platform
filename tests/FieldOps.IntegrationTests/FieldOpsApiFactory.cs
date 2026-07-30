@@ -1,6 +1,11 @@
+using FieldOps.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace FieldOps.IntegrationTests;
 
@@ -47,5 +52,24 @@ public sealed class FieldOpsApiFactory
                             "30"
                     });
             });
+
+        builder.ConfigureServices(services =>
+        {
+            services.RemoveAll<
+                IDbContextOptionsConfiguration<
+                    FieldOpsDbContext>>();
+
+            services.RemoveAll<
+                DbContextOptions<
+                    FieldOpsDbContext>>();
+
+            services.RemoveAll<
+                FieldOpsDbContext>();
+
+            services.AddDbContext<FieldOpsDbContext>(
+                options =>
+                    options.UseNpgsql(
+                        _connectionString));
+        });
     }
 }
