@@ -113,12 +113,13 @@ app.MapAuthenticationEndpoints();
 app.MapAuthorisationEndpoints();
 app.MapCustomerEndpoints();
 app.MapWorkOrderEndpoints();
+app.MapWorkflowEndpoints();
 
 app.MapGet("/api/info", () => Results.Ok(new
 {
     service = "FieldOps.Api",
-    phase = 5,
-    status = "frontend-business-workspace",
+    phase = 6,
+    status = "role-workflow",
     timestamp = DateTimeOffset.UtcNow
 }));
 
