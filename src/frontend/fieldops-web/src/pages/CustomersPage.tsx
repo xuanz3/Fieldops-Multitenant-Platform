@@ -91,7 +91,13 @@ export function CustomersPage() {
   }, [page, search, session])
 
   useEffect(() => {
-    void load()
+    const loadTimer =
+      window.setTimeout(() => {
+        void load()
+      }, 0)
+
+    return () =>
+      window.clearTimeout(loadTimer)
   }, [load])
 
   function submitSearch(

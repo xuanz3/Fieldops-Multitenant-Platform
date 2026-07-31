@@ -148,7 +148,13 @@ export function WorkOrdersPage() {
   ])
 
   useEffect(() => {
-    void load()
+    const loadTimer =
+      window.setTimeout(() => {
+        void load()
+      }, 0)
+
+    return () =>
+      window.clearTimeout(loadTimer)
   }, [load])
 
   function submitSearch(
