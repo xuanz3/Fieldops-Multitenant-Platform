@@ -99,6 +99,8 @@ public sealed class DemoDataSeeder
                 SeedTimestamp),
             cancellationToken);
 
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
         await AddCustomerIfMissingAsync(
             new Customer(
                 DemoDataIds.NorthsideTenant,
@@ -106,7 +108,8 @@ public sealed class DemoDataSeeder
                 "Northside Demo Client",
                 "northside-client@example.test",
                 DemoDataIds.NorthsideCustomerOne,
-                SeedTimestamp),
+                SeedTimestamp,
+                DemoDataIds.NorthsideClientUser),
             cancellationToken);
 
         await AddCustomerIfMissingAsync(
@@ -116,7 +119,8 @@ public sealed class DemoDataSeeder
                 "Northside Retail Demo",
                 "northside-retail@example.test",
                 DemoDataIds.NorthsideCustomerTwo,
-                SeedTimestamp),
+                SeedTimestamp,
+                DemoDataIds.NorthsideClientUser),
             cancellationToken);
 
         await AddCustomerIfMissingAsync(
@@ -168,6 +172,73 @@ public sealed class DemoDataSeeder
             cancellationToken);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await ApplyDemoWorkflowAsync(cancellationToken);
+    }
+
+    private async Task ApplyDemoWorkflowAsync(
+        CancellationToken cancellationToken)
+    {
+        var northsideCustomers =
+            await _dbContext.Customers
+                .IgnoreQueryFilters()
+                .Where(customer =>
+                    customer.TenantId ==
+                    DemoDataIds.NorthsideTenant)
+                .ToListAsync(cancellationToken);
+
+        foreach (var customer in northsideCustomers)
+        {
+            if (customer.ClientUserId !=
+                DemoDataIds.NorthsideClientUser)
+            {
+                customer.LinkClient(
+                    DemoDataIds.NorthsideClientUser);
+            }
+        }
+
+        var inProgress = await _dbContext.WorkOrders
+            .IgnoreQueryFilters()
+            .SingleAsync(
+                item =>
+                    item.Id ==
+                    DemoDataIds.NorthsideWorkOrderOne,
+                cancellationToken);
+
+        if (inProgress.Version == 1)
+        {
+            inProgress.AssignTo(
+                DemoDataIds.NorthsideTechnicianUser,
+                inProgress.Version);
+            inProgress.Start(
+                DemoDataIds.NorthsideTechnicianUser,
+                inProgress.Version);
+        }
+
+        var awaitingApproval =
+            await _dbContext.WorkOrders
+                .IgnoreQueryFilters()
+                .SingleAsync(
+                    item =>
+                        item.Id ==
+                        DemoDataIds.NorthsideWorkOrderTwo,
+                    cancellationToken);
+
+        if (awaitingApproval.Version == 1)
+        {
+            awaitingApproval.AssignTo(
+                DemoDataIds.NorthsideTechnicianUser,
+                awaitingApproval.Version);
+            awaitingApproval.Start(
+                DemoDataIds.NorthsideTechnicianUser,
+                awaitingApproval.Version);
+            awaitingApproval.SubmitForClientApproval(
+                DemoDataIds.NorthsideTechnicianUser,
+                "Access panel replaced and operational checks completed.",
+                awaitingApproval.Version);
+        }
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
     }
 
     private async Task AddTenantIfMissingAsync(

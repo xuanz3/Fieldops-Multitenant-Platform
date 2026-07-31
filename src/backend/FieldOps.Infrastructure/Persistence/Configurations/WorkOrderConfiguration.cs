@@ -1,4 +1,5 @@
 using FieldOps.Domain.Customers;
+using FieldOps.Domain.Identity;
 using FieldOps.Domain.Tenants;
 using FieldOps.Domain.WorkOrders;
 using Microsoft.EntityFrameworkCore;
@@ -6,9 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FieldOps.Infrastructure.Persistence.Configurations;
 
-internal sealed class WorkOrderConfiguration : IEntityTypeConfiguration<WorkOrder>
+internal sealed class WorkOrderConfiguration
+    : IEntityTypeConfiguration<WorkOrder>
 {
-    public void Configure(EntityTypeBuilder<WorkOrder> builder)
+    public void Configure(
+        EntityTypeBuilder<WorkOrder> builder)
     {
         builder.ToTable("work_orders");
 
@@ -35,6 +38,14 @@ internal sealed class WorkOrderConfiguration : IEntityTypeConfiguration<WorkOrde
             .HasMaxLength(40)
             .IsRequired();
 
+        builder.Property(workOrder =>
+                workOrder.CompletionSummary)
+            .HasMaxLength(2000);
+
+        builder.Property(workOrder =>
+                workOrder.ClientReopenReason)
+            .HasMaxLength(1000);
+
         builder.Property(workOrder => workOrder.Version)
             .IsConcurrencyToken();
 
@@ -44,9 +55,17 @@ internal sealed class WorkOrderConfiguration : IEntityTypeConfiguration<WorkOrde
             workOrder.Reference
         }).IsUnique();
 
+        builder.HasIndex(workOrder => new
+        {
+            workOrder.TenantId,
+            workOrder.AssignedTechnicianId,
+            workOrder.Status
+        });
+
         builder.HasOne<Tenant>()
             .WithMany()
-            .HasForeignKey(workOrder => workOrder.TenantId)
+            .HasForeignKey(workOrder =>
+                workOrder.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<Customer>()
@@ -60,6 +79,20 @@ internal sealed class WorkOrderConfiguration : IEntityTypeConfiguration<WorkOrde
             {
                 customer.TenantId,
                 customer.Id
+            })
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<UserAccount>()
+            .WithMany()
+            .HasForeignKey(workOrder => new
+            {
+                workOrder.TenantId,
+                workOrder.AssignedTechnicianId
+            })
+            .HasPrincipalKey(user => new
+            {
+                user.TenantId,
+                user.Id
             })
             .OnDelete(DeleteBehavior.Restrict);
     }
