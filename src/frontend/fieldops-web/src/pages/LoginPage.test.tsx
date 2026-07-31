@@ -11,7 +11,7 @@ import {
 import userEvent from '@testing-library/user-event'
 import {
   MemoryRouter,
-} from 'react-router-dom'
+} from 'react-router'
 import { AuthContext } from '../auth/AuthContext'
 import { LoginPage } from './LoginPage'
 

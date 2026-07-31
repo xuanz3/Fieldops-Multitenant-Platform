@@ -527,6 +527,16 @@ button {
   color: var(--danger);
 }
 
+.feedback-success {
+  border-color: #add9ba;
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.feedback-success strong {
+  color: var(--success);
+}
+
 .record-list {
   display: grid;
 }

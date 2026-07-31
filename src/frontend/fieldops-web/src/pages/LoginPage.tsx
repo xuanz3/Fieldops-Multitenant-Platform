@@ -6,7 +6,7 @@ import {
   Navigate,
   useLocation,
   useNavigate,
-} from 'react-router-dom'
+} from 'react-router'
 import { ApiError } from '../api/client'
 import { useAuth } from '../auth/useAuth'
 import { InputField } from '../components/FormField'

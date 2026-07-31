@@ -12,20 +12,37 @@ namespace FieldOps.Infrastructure.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddFieldOpsInfrastructure(
-        this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection
+        AddFieldOpsInfrastructure(
+            this IServiceCollection services,
+            IConfiguration configuration)
     {
         var connectionString =
-            configuration.GetConnectionString("FieldOps")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:FieldOps must be configured.");
+            configuration.GetConnectionString(
+                "FieldOps")
+            ?? throw new
+                InvalidOperationException(
+                    "ConnectionStrings:FieldOps must be configured.");
 
-        services.TryAddScoped<ITenantContext, EmptyTenantContext>();
-        services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
-        services.AddDbContext<FieldOpsDbContext>(
-            options => options.UseNpgsql(connectionString));
-        services.AddScoped<DemoDataSeeder>();
+        services.TryAddScoped<
+            ITenantContext,
+            EmptyTenantContext>();
+
+        services.AddSingleton<
+            IPasswordHasher,
+            Pbkdf2PasswordHasher>();
+
+        services.AddDbContext<
+            FieldOpsDbContext>(
+            options =>
+                options.UseNpgsql(
+                    connectionString));
+
+        services.AddScoped<
+            DemoDataSeeder>();
+
+        services.AddScoped<
+            DemoEvidenceSeeder>();
 
         return services;
     }
