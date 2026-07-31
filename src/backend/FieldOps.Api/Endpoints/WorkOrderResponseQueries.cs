@@ -1,4 +1,5 @@
 using FieldOps.Api.Contracts.WorkOrders;
+using FieldOps.Domain.WorkOrders;
 using FieldOps.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,11 +8,11 @@ namespace FieldOps.Api.Endpoints;
 internal static class WorkOrderResponseQueries
 {
     public static IQueryable<WorkOrderResponse> Create(
-        FieldOpsDbContext dbContext)
+        FieldOpsDbContext dbContext,
+        IQueryable<WorkOrder> workOrders)
     {
         return
-            from workOrder in
-                dbContext.WorkOrders.AsNoTracking()
+            from workOrder in workOrders
             join customer in
                 dbContext.Customers.AsNoTracking()
                 on workOrder.CustomerId

@@ -319,8 +319,11 @@ public static class WorkflowEndpoints
             CancellationToken cancellationToken)
     {
         var query =
-            WorkOrderResponseQueries.Create(
-                dbContext);
+            dbContext.WorkOrders
+                .AsNoTracking()
+                .Where(workOrder =>
+                    workOrder.Status !=
+                    WorkOrderStatus.Cancelled);
 
         if (!principal.IsInRole(
                 UserRole.TenantAdmin.ToString()))
@@ -329,20 +332,24 @@ public static class WorkflowEndpoints
                 CurrentUser.RequireUserId(
                     principal);
 
-            query = query.Where(item =>
-                item.AssignedTechnicianId ==
+            query = query.Where(workOrder =>
+                workOrder.AssignedTechnicianId ==
                 userId);
         }
 
-        var items = await query
-            .Where(item =>
-                item.Status !=
-                    WorkOrderStatus.Cancelled)
-            .OrderBy(item =>
-                item.Status)
-            .ThenByDescending(item =>
-                item.UpdatedAt)
-            .ToListAsync(cancellationToken);
+        query = query
+            .OrderBy(workOrder =>
+                workOrder.Status)
+            .ThenByDescending(workOrder =>
+                workOrder.UpdatedAt);
+
+        var items =
+            await WorkOrderResponseQueries
+                .Create(
+                    dbContext,
+                    query)
+                .ToListAsync(
+                    cancellationToken);
 
         return Results.Ok(items);
     }
@@ -492,8 +499,9 @@ public static class WorkflowEndpoints
             CancellationToken cancellationToken)
     {
         var query =
-            WorkOrderResponseQueries.Create(
-                dbContext);
+            dbContext.WorkOrders
+                .AsNoTracking()
+                .AsQueryable();
 
         if (!principal.IsInRole(
                 UserRole.TenantAdmin.ToString()))
@@ -502,24 +510,31 @@ public static class WorkflowEndpoints
                 CurrentUser.RequireUserId(
                     principal);
 
-            query = query.Where(item =>
+            query = query.Where(workOrder =>
                 dbContext.Customers.Any(
                     customer =>
                         customer.Id ==
-                        item.CustomerId &&
+                        workOrder.CustomerId &&
                         customer.ClientUserId ==
                         userId));
         }
 
-        var items = await query
-            .OrderBy(item =>
-                item.Status ==
+        query = query
+            .OrderBy(workOrder =>
+                workOrder.Status ==
                 WorkOrderStatus.AwaitingClientApproval
                     ? 0
                     : 1)
-            .ThenByDescending(item =>
-                item.UpdatedAt)
-            .ToListAsync(cancellationToken);
+            .ThenByDescending(workOrder =>
+                workOrder.UpdatedAt);
+
+        var items =
+            await WorkOrderResponseQueries
+                .Create(
+                    dbContext,
+                    query)
+                .ToListAsync(
+                    cancellationToken);
 
         return Results.Ok(items);
     }
@@ -697,10 +712,17 @@ public static class WorkflowEndpoints
             Guid id,
             CancellationToken cancellationToken)
     {
+        var workOrders =
+            dbContext.WorkOrders
+                .AsNoTracking()
+                .Where(workOrder =>
+                    workOrder.Id == id);
+
         return await WorkOrderResponseQueries
-            .Create(dbContext)
+            .Create(
+                dbContext,
+                workOrders)
             .SingleAsync(
-                item => item.Id == id,
                 cancellationToken);
     }
 
