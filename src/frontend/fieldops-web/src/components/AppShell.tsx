@@ -1,7 +1,7 @@
 import {
   NavLink,
   Outlet,
-} from 'react-router-dom'
+} from 'react-router'
 import { useAuth } from '../auth/useAuth'
 import type { UserRole } from '../types'
 

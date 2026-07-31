@@ -14,7 +14,7 @@ import {
   MemoryRouter,
   Route,
   Routes,
-} from 'react-router-dom'
+} from 'react-router'
 import {
   AuthContext,
 } from '../auth/AuthContext'

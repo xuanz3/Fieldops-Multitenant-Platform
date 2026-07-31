@@ -2,7 +2,7 @@ import {
   BrowserRouter,
   Route,
   Routes,
-} from 'react-router-dom'
+} from 'react-router'
 import { AuthProvider } from './auth/AuthProvider'
 import { AppShell } from './components/AppShell'
 import { ProtectedRoute } from './components/ProtectedRoute'

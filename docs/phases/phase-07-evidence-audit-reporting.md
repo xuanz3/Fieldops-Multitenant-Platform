@@ -46,7 +46,7 @@ The navigation remains role-aware. Evidence is available to all four roles withi
 
 ## Security maintenance
 
-React Router is upgraded from 6.30.4 to 7.18.2 and the entire frontend test and production-build suite is rerun.
+React Router is migrated from react-router-dom 8.3.0 to react-router 8.3.0 and the entire frontend test and production-build suite is rerun.
 
 ## Cost
 
