@@ -6,12 +6,16 @@ import {
 import { AuthProvider } from './auth/AuthProvider'
 import { AppShell } from './components/AppShell'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import { ClientApprovalsPage } from './pages/ClientApprovalsPage'
 import { CustomersPage } from './pages/CustomersPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { DispatchPage } from './pages/DispatchPage'
 import { LoginPage } from './pages/LoginPage'
 import { NotFoundPage } from './pages/NotFoundPage'
+import { TechnicianPage } from './pages/TechnicianPage'
 import { WorkOrdersPage } from './pages/WorkOrdersPage'
 import './App.css'
+import './phase6.css'
 
 function App() {
   return (
@@ -36,6 +40,20 @@ function App() {
               <Route
                 path="work-orders"
                 element={<WorkOrdersPage />}
+              />
+              <Route
+                path="dispatch"
+                element={<DispatchPage />}
+              />
+              <Route
+                path="technician"
+                element={<TechnicianPage />}
+              />
+              <Route
+                path="client-approvals"
+                element={
+                  <ClientApprovalsPage />
+                }
               />
             </Route>
           </Route>

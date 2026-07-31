@@ -1,10 +1,13 @@
 import { apiRequest } from './client'
 import type {
+  ClientOption,
   Customer,
   CustomerInput,
+  CustomerOwnership,
   CustomerUpdateInput,
   LoginResponse,
   PagedResponse,
+  TechnicianOption,
   WorkOrder,
   WorkOrderInput,
   WorkOrderPriority,
@@ -169,6 +172,153 @@ export function updateWorkOrder(
         description: input.description || null,
         priority: input.priority,
         version: input.version,
+      },
+    },
+  )
+}
+
+export function listTechnicians(
+  token: string,
+): Promise<TechnicianOption[]> {
+  return apiRequest<TechnicianOption[]>(
+    '/api/workflow/technicians',
+    { token },
+  )
+}
+
+export function listClients(
+  token: string,
+): Promise<ClientOption[]> {
+  return apiRequest<ClientOption[]>(
+    '/api/workflow/clients',
+    { token },
+  )
+}
+
+export function listCustomerOwnership(
+  token: string,
+): Promise<CustomerOwnership[]> {
+  return apiRequest<CustomerOwnership[]>(
+    '/api/workflow/customer-ownership',
+    { token },
+  )
+}
+
+export function linkCustomerClient(
+  token: string,
+  customerId: string,
+  clientUserId: string | null,
+): Promise<CustomerOwnership> {
+  return apiRequest<CustomerOwnership>(
+    `/api/workflow/customers/${customerId}/client`,
+    {
+      method: 'PUT',
+      token,
+      body: { clientUserId },
+    },
+  )
+}
+
+export function assignWorkOrder(
+  token: string,
+  workOrderId: string,
+  technicianUserId: string,
+  version: number,
+): Promise<WorkOrder> {
+  return apiRequest<WorkOrder>(
+    `/api/workflow/work-orders/${workOrderId}/assign`,
+    {
+      method: 'POST',
+      token,
+      body: {
+        technicianUserId,
+        version,
+      },
+    },
+  )
+}
+
+export function listTechnicianWorkOrders(
+  token: string,
+): Promise<WorkOrder[]> {
+  return apiRequest<WorkOrder[]>(
+    '/api/technician/work-orders',
+    { token },
+  )
+}
+
+export function startWorkOrder(
+  token: string,
+  workOrderId: string,
+  version: number,
+): Promise<WorkOrder> {
+  return apiRequest<WorkOrder>(
+    `/api/technician/work-orders/${workOrderId}/start`,
+    {
+      method: 'POST',
+      token,
+      body: { version },
+    },
+  )
+}
+
+export function submitWorkOrder(
+  token: string,
+  workOrderId: string,
+  completionSummary: string,
+  version: number,
+): Promise<WorkOrder> {
+  return apiRequest<WorkOrder>(
+    `/api/technician/work-orders/${workOrderId}/submit`,
+    {
+      method: 'POST',
+      token,
+      body: {
+        completionSummary,
+        version,
+      },
+    },
+  )
+}
+
+export function listClientWorkOrders(
+  token: string,
+): Promise<WorkOrder[]> {
+  return apiRequest<WorkOrder[]>(
+    '/api/client/work-orders',
+    { token },
+  )
+}
+
+export function approveWorkOrder(
+  token: string,
+  workOrderId: string,
+  version: number,
+): Promise<WorkOrder> {
+  return apiRequest<WorkOrder>(
+    `/api/client/work-orders/${workOrderId}/approve`,
+    {
+      method: 'POST',
+      token,
+      body: { version },
+    },
+  )
+}
+
+export function reopenWorkOrder(
+  token: string,
+  workOrderId: string,
+  reason: string,
+  version: number,
+): Promise<WorkOrder> {
+  return apiRequest<WorkOrder>(
+    `/api/client/work-orders/${workOrderId}/reopen`,
+    {
+      method: 'POST',
+      token,
+      body: {
+        reason,
+        version,
       },
     },
   )
