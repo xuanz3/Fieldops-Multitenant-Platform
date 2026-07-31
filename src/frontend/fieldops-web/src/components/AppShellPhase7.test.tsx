@@ -1,10 +1,12 @@
 import {
+  afterEach,
   describe,
   expect,
   it,
   vi,
 } from 'vitest'
 import {
+  cleanup,
   render,
   screen,
 } from '@testing-library/react'
@@ -20,6 +22,10 @@ import { AppShell } from './AppShell'
 import type {
   UserRole,
 } from '../types'
+
+afterEach(() => {
+  cleanup()
+})
 
 function renderRole(
   role: UserRole,
