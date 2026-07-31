@@ -1,115 +1,150 @@
 # FieldOps Hub
 
 [![Continuous Integration](https://github.com/xuanz3/Fieldops-Multitenant-Platform/actions/workflows/ci.yml/badge.svg)](https://github.com/xuanz3/Fieldops-Multitenant-Platform/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/xuanz3/Fieldops-Multitenant-Platform)](https://github.com/xuanz3/Fieldops-Multitenant-Platform/releases)
 
-FieldOps Hub is a portfolio-grade multi-tenant field service operations platform built with React, TypeScript, ASP.NET Core, Entity Framework Core and PostgreSQL.
+A multi-tenant field service operations platform built with React, TypeScript, ASP.NET Core, Entity Framework Core and PostgreSQL.
 
-> Status: Phase 7 complete. The product now covers Customer and WorkOrder management, role-owned field execution, controlled evidence, append-only audit history and operational reporting.
+![FieldOps Hub dashboard](docs/evidence/final/01-dashboard-overview.png)
 
-## Current capabilities
+## Product
 
-- multi-tenant PostgreSQL model
-- Tenant-scoped Entity Framework query filters
-- PBKDF2 password hashing and JWT authentication
-- Tenant Admin, Dispatcher, Technician and Client roles
-- Customer and WorkOrder REST APIs
-- Dispatcher assignment and reassignment
-- Technician start and completion submission
-- Client approval and reopen workflow
-- optimistic concurrency on WorkOrder writes
-- controlled WorkOrder attachments
-- PDF, PNG, JPEG and TXT allow-list
-- 5 MB attachment limit
-- SHA-256 attachment integrity metadata
-- role- and ownership-authorised downloads
-- automatic Customer, WorkOrder and attachment audit events
-- per-Tenant SHA-256 audit chain
-- PostgreSQL trigger blocking audit updates and deletes
-- audit-chain verification
-- operations report and CSV export
-- responsive role-aware React workspace
-- fictional two-Tenant demonstration data
-- unit, PostgreSQL, HTTP API and frontend tests
-- browser-to-real-API smoke validation
-- GitHub Actions quality gates
-- local-first, cloud-portable architecture
+FieldOps Hub models an operational workflow from client request through dispatch, field execution, completion evidence and client approval.
 
-## Run the local demonstration
+- Tenant Admin manages the complete tenant workspace.
+- Dispatcher maintains customers, creates work orders and assigns technicians.
+- Technician starts assigned work and submits completion notes and evidence.
+- Client reviews linked work and approves or reopens it.
+- Audit and reporting provide management visibility and integrity evidence.
 
-Pull the latest `main`, then on macOS double-click:
+## Key engineering outcomes
 
-`START_LOCAL_DEMO.command`
-
-Or run:
-
-```bash
-./scripts/start-local-demo.sh
-```
-
-Open `http://127.0.0.1:5173`.
-
-All fictional demo accounts use:
-
-- Tenant: `northside-property-services`
-- Password: `FieldOps-Demo-2026!`
-
-Role emails:
-
-- Dispatcher: `dispatcher@northside.example.test`
-- Technician: `technician@northside.example.test`
-- Client: `client@northside.example.test`
-- Tenant Admin: `admin@northside.example.test`
-
-## Demonstration workflow
-
-1. Sign in as Dispatcher and open **Dispatch**.
-2. Assign a WorkOrder to the Technician.
-3. Sign in as Technician, start work and submit a completion summary.
-4. Open **Evidence** and upload a PDF, PNG, JPEG or TXT file.
-5. Sign in as Client and approve or reopen the linked work.
-6. Sign in as Dispatcher and inspect **Audit log** and **Reports**.
-7. Export the operations report as CSV.
-
-## Verified security behaviour
-
-The automated suite proves:
-
-- Tenant isolation
-- signed Tenant identity
-- role authorization
-- header-spoofing resistance
-- cross-Tenant relationship rejection
-- assigned-Technician-only execution
-- linked-Client-only decisions
-- optimistic concurrency
-- attachment type and size controls
-- role-scoped evidence access
+- signed JWT tenant identity
+- PBKDF2 password hashing
+- four role policies
+- tenant-scoped Entity Framework query filters
+- composite PostgreSQL tenant relationships
+- optimistic WorkOrder concurrency
+- controlled PDF, PNG, JPEG and TXT attachments
+- 5 MB upload limit
 - SHA-256 file integrity metadata
-- valid Tenant audit chains
-- PostgreSQL rejection of direct audit mutation
-- dependency and repository quality gates
+- per-tenant append-only audit chain
+- PostgreSQL trigger preventing audit updates and deletes
+- operational metrics and CSV export
+- production-style Docker deployment
+- automated final evidence and demo recording
+
+## Product evidence
+
+### Dispatch and field execution
+
+![Dispatcher assignment workspace](docs/evidence/final/05-dispatch-board.png)
+
+![Technician active work](docs/evidence/final/06-technician-active-task.png)
+
+### Evidence and client decision
+
+![Completion evidence](docs/evidence/final/07-completion-evidence.png)
+
+![Client approval](docs/evidence/final/08-client-approval.png)
+
+### Audit and reporting
+
+![Verified audit log](docs/evidence/final/11-audit-log.png)
+
+![Operational reporting](docs/evidence/final/12-reporting-dashboard.png)
 
 ## Architecture
 
-- React and TypeScript browser client
-- ASP.NET Core modular monolith on .NET 10 LTS
-- PostgreSQL and Entity Framework Core
-- Docker-based local services
-- Vite local reverse proxy
-- GitHub Actions continuous integration
+![FieldOps Hub architecture](docs/evidence/final/13-architecture-tenant-isolation.png)
 
-Small demonstration attachments are stored in PostgreSQL for deterministic zero-cost local execution. Production-scale object storage and malware scanning are documented as future deployment concerns.
+The browser communicates with an ASP.NET Core modular monolith. Tenant identity is derived only from validated token claims. The API applies role ownership and validation, while PostgreSQL provides relationship constraints, query-filtered persistence, optimistic concurrency and append-only audit protection.
+
+## Verification
+
+Final validation includes:
+
+- .NET build
+- 38 unit tests
+- 43 PostgreSQL integration and API security tests
+- 17 frontend unit and component tests
+- frontend production build
+- npm moderate-severity audit gate
+- NuGet transitive vulnerability scan
+- production web and API image builds
+- production Compose health validation
+- evidence upload/download smoke test
+- audit-chain verification
+- report and CSV export smoke test
+- evidence prerequisite exact-head GitHub Actions run `30635359995`
+
+![Exact-head CI evidence](docs/evidence/final/14-postgresql-isolation-ci.png)
+
+## Deployment
+
+### Local development demonstration
+
+On macOS:
+
+`START_LOCAL_DEMO.command`
+
+The launcher selects free PostgreSQL, API and frontend ports automatically.
+
+### Production container demonstration
+
+On macOS:
+
+`START_PRODUCTION_DEMO.command`
+
+The production stack contains:
+
+- Nginx and compiled React assets
+- private ASP.NET Core API
+- private PostgreSQL 17 database
+- persistent database volume
+- generated runtime secrets
+- migrations and fictional demonstration seed
+- service health checks
+
+![Production deployment evidence](docs/evidence/final/15-deployment-evidence.png)
+
+The production Compose configuration is portable to a Docker-enabled Linux virtual machine. This repository does not claim a permanently hosted public cloud service.
+
+## Demonstration access
+
+Tenant:
+
+`northside-property-services`
+
+Password:
+
+`FieldOps-Demo-2026!`
+
+Accounts:
+
+- `dispatcher@northside.example.test`
+- `technician@northside.example.test`
+- `client@northside.example.test`
+- `admin@northside.example.test`
+
+All accounts and operational records are fictional.
+
+## Recorded walkthrough
+
+[Watch the FieldOps Hub demonstration](docs/evidence/fieldops-hub-demo.webm)
 
 ## Documentation
 
-- [Phase 6 role-owned workflow](docs/phases/phase-06-role-workflow.md)
-- [Phase 7 evidence, audit and reporting](docs/phases/phase-07-evidence-audit-reporting.md)
-- [Controlled evidence decision](docs/decisions/ADR-010-controlled-evidence-storage.md)
-- [Append-only audit decision](docs/decisions/ADR-011-append-only-audit-chain.md)
-- [Phase 7 test coverage](docs/testing/phase-07-evidence-audit-report-tests.md)
-- [v0.7.0 release notes](docs/releases/v0.7.0.md)
-- [Final screenshot plan](docs/evidence/FINAL_SCREENSHOT_PLAN.md)
+- [Deployment guide](docs/DEPLOYMENT.md)
+- [Portfolio guide](docs/PORTFOLIO.md)
+- [Final validation](docs/FINAL_VALIDATION.md)
+- [Final evidence index](docs/evidence/final/README.md)
+- [Phase 8 summary](docs/phases/phase-08-final-deployment-portfolio.md)
+- [Production deployment decision](docs/decisions/ADR-012-production-container-deployment.md)
+- [v1.0.0 release notes](docs/releases/v1.0.0.md)
 
-## Current limitations
+## Scope and limitations
 
-Production object storage, malware scanning, external audit anchoring, notifications, MFA, refresh tokens, secure production cookie authentication and cloud deployment are not implemented yet. Phase 8 completes deployment, final evidence, README presentation and portfolio packaging.
+Implemented scope covers tenant-safe field operations, evidence, audit, reporting, automated tests and container deployment.
+
+A commercial production environment would additionally require public HTTPS infrastructure, managed secrets, encrypted backups, central observability, object storage, malware scanning, MFA and formal disaster recovery controls.
