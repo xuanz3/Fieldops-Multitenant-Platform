@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using FieldOps.Api.Authentication;
 using FieldOps.Api.Authorization;
 using FieldOps.Api.Endpoints;
@@ -14,19 +15,33 @@ var seedDemoRequested =
         "--seed-demo",
         StringComparer.OrdinalIgnoreCase);
 
-var builder = WebApplication.CreateBuilder(args);
+var builder =
+    WebApplication.CreateBuilder(args);
 
-var jwtOptions = JwtOptions.Create(
-    builder.Configuration,
-    allowEphemeralSigningKey: seedDemoRequested);
+var jwtOptions =
+    JwtOptions.Create(
+        builder.Configuration,
+        allowEphemeralSigningKey:
+            seedDemoRequested);
 
 builder.Services.AddSingleton(jwtOptions);
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ITenantContext, HttpTenantContext>();
-builder.Services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
-builder.Services.AddFieldOpsInfrastructure(builder.Configuration);
+builder.Services.ConfigureHttpJsonOptions(
+    options =>
+    {
+        options.SerializerOptions.Converters.Add(
+            new JsonStringEnumConverter());
+    });
+builder.Services.AddScoped<
+    ITenantContext,
+    HttpTenantContext>();
+builder.Services.AddScoped<
+    IAccessTokenService,
+    JwtAccessTokenService>();
+builder.Services.AddFieldOpsInfrastructure(
+    builder.Configuration);
 
 builder.Services
     .AddAuthentication(
@@ -50,11 +65,13 @@ if (seedDemoRequested)
 
     var dbContext =
         scope.ServiceProvider
-            .GetRequiredService<FieldOpsDbContext>();
+            .GetRequiredService<
+                FieldOpsDbContext>();
 
     var seeder =
         scope.ServiceProvider
-            .GetRequiredService<DemoDataSeeder>();
+            .GetRequiredService<
+                DemoDataSeeder>();
 
     await dbContext.Database.MigrateAsync();
     await seeder.SeedAsync();
@@ -94,12 +111,14 @@ app.UseAuthorization();
 app.MapHealthChecks("/health");
 app.MapAuthenticationEndpoints();
 app.MapAuthorisationEndpoints();
+app.MapCustomerEndpoints();
+app.MapWorkOrderEndpoints();
 
 app.MapGet("/api/info", () => Results.Ok(new
 {
     service = "FieldOps.Api",
-    phase = 3,
-    status = "authentication-authorisation",
+    phase = 4,
+    status = "customer-work-order-rest-apis",
     timestamp = DateTimeOffset.UtcNow
 }));
 
