@@ -1,7 +1,7 @@
 interface FeedbackProps {
   title: string
   message: string
-  tone?: 'neutral' | 'error'
+  tone?: 'neutral' | 'success' | 'error'
 }
 
 export function Feedback({

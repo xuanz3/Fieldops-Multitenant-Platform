@@ -1,7 +1,8 @@
 const configuredBaseUrl =
   import.meta.env.VITE_API_BASE_URL?.trim() ?? ''
 
-const apiBaseUrl = configuredBaseUrl.replace(/\/$/, '')
+const apiBaseUrl =
+  configuredBaseUrl.replace(/\/$/, '')
 
 export interface ApiRequestOptions
   extends Omit<RequestInit, 'body'> {
@@ -18,12 +19,14 @@ interface ProblemDetails {
 
 export class ApiError extends Error {
   readonly status: number
-  readonly fieldErrors: Record<string, string[]>
+  readonly fieldErrors:
+    Record<string, string[]>
 
   constructor(
     status: number,
     message: string,
-    fieldErrors: Record<string, string[]> = {},
+    fieldErrors:
+      Record<string, string[]> = {},
   ) {
     super(message)
     this.name = 'ApiError'
@@ -35,10 +38,19 @@ export class ApiError extends Error {
 function buildHeaders(
   options: ApiRequestOptions,
 ): Headers {
-  const headers = new Headers(options.headers)
+  const headers =
+    new Headers(options.headers)
 
-  if (options.body !== undefined) {
-    headers.set('Content-Type', 'application/json')
+  if (
+    options.body !== undefined &&
+    !(options.body instanceof FormData) &&
+    !(options.body instanceof Blob) &&
+    typeof options.body !== 'string'
+  ) {
+    headers.set(
+      'Content-Type',
+      'application/json',
+    )
   }
 
   if (options.token) {
@@ -48,24 +60,54 @@ function buildHeaders(
     )
   }
 
-  headers.set('Accept', 'application/json')
+  headers.set(
+    'Accept',
+    'application/json',
+  )
 
   return headers
+}
+
+function serialiseBody(
+  body: unknown,
+): BodyInit | undefined {
+  if (body === undefined) {
+    return undefined
+  }
+
+  if (
+    body instanceof FormData ||
+    body instanceof Blob ||
+    typeof body === 'string' ||
+    body instanceof URLSearchParams ||
+    body instanceof ArrayBuffer
+  ) {
+    return body
+  }
+
+  return JSON.stringify(body)
 }
 
 async function readPayload(
   response: Response,
 ): Promise<unknown> {
-  const text = await response.text()
+  const text =
+    await response.text()
 
   if (!text) {
     return null
   }
 
   const contentType =
-    response.headers.get('content-type') ?? ''
+    response.headers.get(
+      'content-type',
+    ) ?? ''
 
-  if (!contentType.includes('application/json')) {
+  if (
+    !contentType.includes(
+      'application/json',
+    )
+  ) {
     return text
   }
 
@@ -77,13 +119,15 @@ function errorMessage(
   payload: unknown,
 ): {
   message: string
-  fieldErrors: Record<string, string[]>
+  fieldErrors:
+    Record<string, string[]>
 } {
   if (
     payload !== null &&
     typeof payload === 'object'
   ) {
-    const problem = payload as ProblemDetails
+    const problem =
+      payload as ProblemDetails
 
     return {
       message:
@@ -91,7 +135,8 @@ function errorMessage(
         problem.detail ??
         problem.title ??
         defaultMessage(status),
-      fieldErrors: problem.errors ?? {},
+      fieldErrors:
+        problem.errors ?? {},
     }
   }
 
@@ -106,12 +151,15 @@ function errorMessage(
   }
 
   return {
-    message: defaultMessage(status),
+    message:
+      defaultMessage(status),
     fieldErrors: {},
   }
 }
 
-function defaultMessage(status: number): string {
+function defaultMessage(
+  status: number,
+): string {
   switch (status) {
     case 400:
       return 'The request is invalid.'
@@ -123,34 +171,39 @@ function defaultMessage(status: number): string {
       return 'The requested record was not found.'
     case 409:
       return 'The record changed or conflicts with an existing record.'
+    case 413:
+      return 'The selected file is too large.'
     default:
       return 'The request could not be completed.'
   }
 }
 
-export async function apiRequest<T>(
+async function fetchApi(
   path: string,
   options: ApiRequestOptions = {},
-): Promise<T> {
-  const response = await fetch(
-    `${apiBaseUrl}${path}`,
-    {
-      ...options,
-      headers: buildHeaders(options),
-      body:
-        options.body === undefined
-          ? undefined
-          : JSON.stringify(options.body),
-    },
-  )
-
-  const payload = await readPayload(response)
+): Promise<Response> {
+  const response =
+    await fetch(
+      `${apiBaseUrl}${path}`,
+      {
+        ...options,
+        headers:
+          buildHeaders(options),
+        body:
+          serialiseBody(
+            options.body,
+          ),
+      },
+    )
 
   if (!response.ok) {
-    const error = errorMessage(
-      response.status,
-      payload,
-    )
+    const payload =
+      await readPayload(response)
+    const error =
+      errorMessage(
+        response.status,
+        payload,
+      )
 
     throw new ApiError(
       response.status,
@@ -159,5 +212,33 @@ export async function apiRequest<T>(
     )
   }
 
-  return payload as T
+  return response
+}
+
+export async function apiRequest<T>(
+  path: string,
+  options: ApiRequestOptions = {},
+): Promise<T> {
+  const response =
+    await fetchApi(
+      path,
+      options,
+    )
+
+  return await readPayload(
+    response,
+  ) as T
+}
+
+export async function apiDownload(
+  path: string,
+  token: string,
+): Promise<Blob> {
+  const response =
+    await fetchApi(
+      path,
+      { token },
+    )
+
+  return await response.blob()
 }

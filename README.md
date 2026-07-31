@@ -2,29 +2,37 @@
 
 [![Continuous Integration](https://github.com/xuanz3/Fieldops-Multitenant-Platform/actions/workflows/ci.yml/badge.svg)](https://github.com/xuanz3/Fieldops-Multitenant-Platform/actions/workflows/ci.yml)
 
-FieldOps Hub is a portfolio-grade multi-tenant field service operations platform covering customer records, work orders, dispatch, technician execution and client approval.
+FieldOps Hub is a portfolio-grade multi-tenant field service operations platform built with React, TypeScript, ASP.NET Core, Entity Framework Core and PostgreSQL.
 
-> Status: Phase 6 complete. The application now supports an end-to-end role-owned workflow from Dispatcher assignment through Technician completion and Client approval or reopen.
+> Status: Phase 7 complete. The product now covers Customer and WorkOrder management, role-owned field execution, controlled evidence, append-only audit history and operational reporting.
 
 ## Current capabilities
 
-- Multi-tenant PostgreSQL data model
-- Tenant-scoped Entity Framework query filters and relationship constraints
+- multi-tenant PostgreSQL model
+- Tenant-scoped Entity Framework query filters
 - PBKDF2 password hashing and JWT authentication
 - Tenant Admin, Dispatcher, Technician and Client roles
 - Customer and WorkOrder REST APIs
-- Customer-to-Client ownership
-- WorkOrder-to-Technician assignment
-- Technician start and completion submission workflow
+- Dispatcher assignment and reassignment
+- Technician start and completion submission
 - Client approval and reopen workflow
-- WorkOrder optimistic concurrency
-- Responsive role-aware React workspace
-- Dashboard, Customers, Work orders, Dispatch, My work and Client approvals pages
-- Fictional two-Tenant demonstration data
-- Unit, PostgreSQL, HTTP API and frontend tests
-- Browser-to-real-API workflow smoke validation
+- optimistic concurrency on WorkOrder writes
+- controlled WorkOrder attachments
+- PDF, PNG, JPEG and TXT allow-list
+- 5 MB attachment limit
+- SHA-256 attachment integrity metadata
+- role- and ownership-authorised downloads
+- automatic Customer, WorkOrder and attachment audit events
+- per-Tenant SHA-256 audit chain
+- PostgreSQL trigger blocking audit updates and deletes
+- audit-chain verification
+- operations report and CSV export
+- responsive role-aware React workspace
+- fictional two-Tenant demonstration data
+- unit, PostgreSQL, HTTP API and frontend tests
+- browser-to-real-API smoke validation
 - GitHub Actions quality gates
-- Local-first, cloud-portable architecture
+- local-first, cloud-portable architecture
 
 ## Run the local demonstration
 
@@ -40,7 +48,7 @@ Or run:
 
 Open `http://127.0.0.1:5173`.
 
-All demo accounts use:
+All fictional demo accounts use:
 
 - Tenant: `northside-property-services`
 - Password: `FieldOps-Demo-2026!`
@@ -55,15 +63,31 @@ Role emails:
 ## Demonstration workflow
 
 1. Sign in as Dispatcher and open **Dispatch**.
-2. Link a Client to a Customer and assign a WorkOrder to the Technician.
-3. Sign out and sign in as Technician.
-4. Start the task and submit a completion summary.
-5. Sign out and sign in as Client.
-6. Approve the work or reopen it with a reason.
+2. Assign a WorkOrder to the Technician.
+3. Sign in as Technician, start work and submit a completion summary.
+4. Open **Evidence** and upload a PDF, PNG, JPEG or TXT file.
+5. Sign in as Client and approve or reopen the linked work.
+6. Sign in as Dispatcher and inspect **Audit log** and **Reports**.
+7. Export the operations report as CSV.
 
 ## Verified security behaviour
 
-The automated suite proves Tenant isolation, role authorization, signed Tenant identity, header-spoofing resistance, cross-Tenant relationship rejection, assigned-Technician-only execution, linked-Client-only decisions, optimistic concurrency and dependency quality gates.
+The automated suite proves:
+
+- Tenant isolation
+- signed Tenant identity
+- role authorization
+- header-spoofing resistance
+- cross-Tenant relationship rejection
+- assigned-Technician-only execution
+- linked-Client-only decisions
+- optimistic concurrency
+- attachment type and size controls
+- role-scoped evidence access
+- SHA-256 file integrity metadata
+- valid Tenant audit chains
+- PostgreSQL rejection of direct audit mutation
+- dependency and repository quality gates
 
 ## Architecture
 
@@ -74,16 +98,18 @@ The automated suite proves Tenant isolation, role authorization, signed Tenant i
 - Vite local reverse proxy
 - GitHub Actions continuous integration
 
+Small demonstration attachments are stored in PostgreSQL for deterministic zero-cost local execution. Production-scale object storage and malware scanning are documented as future deployment concerns.
+
 ## Documentation
 
-- [Phase 4 Customer and WorkOrder APIs](docs/phases/phase-04-customer-workorder-rest-apis.md)
-- [Phase 5 frontend business workspace](docs/phases/phase-05-frontend-business-workspace.md)
 - [Phase 6 role-owned workflow](docs/phases/phase-06-role-workflow.md)
-- [Role-owned workflow decision](docs/decisions/ADR-009-role-owned-operational-workflow.md)
-- [Phase 6 workflow tests](docs/testing/phase-06-workflow-test-results.md)
-- [v0.6.0 release notes](docs/releases/v0.6.0.md)
+- [Phase 7 evidence, audit and reporting](docs/phases/phase-07-evidence-audit-reporting.md)
+- [Controlled evidence decision](docs/decisions/ADR-010-controlled-evidence-storage.md)
+- [Append-only audit decision](docs/decisions/ADR-011-append-only-audit-chain.md)
+- [Phase 7 test coverage](docs/testing/phase-07-evidence-audit-report-tests.md)
+- [v0.7.0 release notes](docs/releases/v0.7.0.md)
 - [Final screenshot plan](docs/evidence/FINAL_SCREENSHOT_PLAN.md)
 
 ## Current limitations
 
-Attachments, immutable audit events, reporting, notifications, refresh tokens, MFA, secure production cookie authentication and cloud deployment are not implemented yet.
+Production object storage, malware scanning, external audit anchoring, notifications, MFA, refresh tokens, secure production cookie authentication and cloud deployment are not implemented yet. Phase 8 completes deployment, final evidence, README presentation and portfolio packaging.

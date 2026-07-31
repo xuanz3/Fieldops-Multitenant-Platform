@@ -1,7 +1,9 @@
 using System.Text.Json.Serialization;
+using FieldOps.Api.Auditing;
 using FieldOps.Api.Authentication;
 using FieldOps.Api.Authorization;
 using FieldOps.Api.Endpoints;
+using FieldOps.Application.Auditing;
 using FieldOps.Application.Identity;
 using FieldOps.Application.Tenancy;
 using FieldOps.Infrastructure.DependencyInjection;
@@ -28,18 +30,26 @@ builder.Services.AddSingleton(jwtOptions);
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 builder.Services.AddHttpContextAccessor();
+
 builder.Services.ConfigureHttpJsonOptions(
     options =>
     {
         options.SerializerOptions.Converters.Add(
             new JsonStringEnumConverter());
     });
+
 builder.Services.AddScoped<
     ITenantContext,
     HttpTenantContext>();
+
+builder.Services.AddScoped<
+    IAuditActorContext,
+    HttpAuditActorContext>();
+
 builder.Services.AddScoped<
     IAccessTokenService,
     JwtAccessTokenService>();
+
 builder.Services.AddFieldOpsInfrastructure(
     builder.Configuration);
 
@@ -50,7 +60,8 @@ builder.Services
     {
         options.MapInboundClaims = false;
         options.TokenValidationParameters =
-            jwtOptions.CreateValidationParameters();
+            jwtOptions
+                .CreateValidationParameters();
     });
 
 builder.Services.AddAuthorization(
@@ -73,11 +84,20 @@ if (seedDemoRequested)
             .GetRequiredService<
                 DemoDataSeeder>();
 
-    await dbContext.Database.MigrateAsync();
+    var evidenceSeeder =
+        scope.ServiceProvider
+            .GetRequiredService<
+                DemoEvidenceSeeder>();
+
+    await dbContext.Database
+        .MigrateAsync();
+
     await seeder.SeedAsync();
+    await evidenceSeeder.SeedAsync();
 
     var tenantCount =
-        await dbContext.Tenants.CountAsync();
+        await dbContext.Tenants
+            .CountAsync();
 
     var customerCount =
         await dbContext.Customers
@@ -94,8 +114,19 @@ if (seedDemoRequested)
             .IgnoreQueryFilters()
             .CountAsync();
 
+    var attachmentCount =
+        await dbContext
+            .WorkOrderAttachments
+            .IgnoreQueryFilters()
+            .CountAsync();
+
+    var auditEventCount =
+        await dbContext.AuditEvents
+            .IgnoreQueryFilters()
+            .CountAsync();
+
     Console.WriteLine(
-        $"Demo data ready: tenants={tenantCount}, customers={customerCount}, workOrders={workOrderCount}, users={userCount}");
+        $"Demo data ready: tenants={tenantCount}, customers={customerCount}, workOrders={workOrderCount}, users={userCount}, attachments={attachmentCount}, auditEvents={auditEventCount}");
 
     return;
 }
@@ -114,14 +145,21 @@ app.MapAuthorisationEndpoints();
 app.MapCustomerEndpoints();
 app.MapWorkOrderEndpoints();
 app.MapWorkflowEndpoints();
+app.MapAttachmentEndpoints();
+app.MapAuditEndpoints();
+app.MapReportEndpoints();
 
-app.MapGet("/api/info", () => Results.Ok(new
-{
-    service = "FieldOps.Api",
-    phase = 6,
-    status = "role-workflow",
-    timestamp = DateTimeOffset.UtcNow
-}));
+app.MapGet(
+    "/api/info",
+    () => Results.Ok(new
+    {
+        service = "FieldOps.Api",
+        phase = 7,
+        status =
+            "evidence-audit-reporting",
+        timestamp =
+            DateTimeOffset.UtcNow
+    }));
 
 app.Run();
 

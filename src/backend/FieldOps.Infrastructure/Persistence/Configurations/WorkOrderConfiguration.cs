@@ -15,25 +15,38 @@ internal sealed class WorkOrderConfiguration
     {
         builder.ToTable("work_orders");
 
-        builder.HasKey(workOrder => workOrder.Id);
+        builder.HasKey(workOrder =>
+            workOrder.Id);
 
-        builder.Property(workOrder => workOrder.Reference)
+        builder.HasAlternateKey(workOrder =>
+            new
+            {
+                workOrder.TenantId,
+                workOrder.Id
+            });
+
+        builder.Property(workOrder =>
+                workOrder.Reference)
             .HasMaxLength(40)
             .IsRequired();
 
-        builder.Property(workOrder => workOrder.Title)
+        builder.Property(workOrder =>
+                workOrder.Title)
             .HasMaxLength(200)
             .IsRequired();
 
-        builder.Property(workOrder => workOrder.Description)
+        builder.Property(workOrder =>
+                workOrder.Description)
             .HasMaxLength(4000);
 
-        builder.Property(workOrder => workOrder.Priority)
+        builder.Property(workOrder =>
+                workOrder.Priority)
             .HasConversion<string>()
             .HasMaxLength(32)
             .IsRequired();
 
-        builder.Property(workOrder => workOrder.Status)
+        builder.Property(workOrder =>
+                workOrder.Status)
             .HasConversion<string>()
             .HasMaxLength(40)
             .IsRequired();
@@ -46,7 +59,8 @@ internal sealed class WorkOrderConfiguration
                 workOrder.ClientReopenReason)
             .HasMaxLength(1000);
 
-        builder.Property(workOrder => workOrder.Version)
+        builder.Property(workOrder =>
+                workOrder.Version)
             .IsConcurrencyToken();
 
         builder.HasIndex(workOrder => new

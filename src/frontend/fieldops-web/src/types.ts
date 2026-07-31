@@ -127,3 +127,77 @@ export interface CustomerOwnership {
   clientUserId: string | null
   clientDisplayName: string | null
 }
+
+export interface WorkOrderAttachment {
+  id: string
+  workOrderId: string
+  fileName: string
+  contentType: string
+  sizeBytes: number
+  sha256: string
+  uploadedByUserId: string
+  uploadedByDisplayName: string
+  uploadedAt: string
+}
+
+export interface AuditEvent {
+  id: string
+  sequence: number
+  action: string
+  entityType: string
+  entityId: string
+  workOrderId: string | null
+  summary: string
+  actorUserId: string | null
+  actorDisplayName: string
+  actorRole: string
+  occurredAt: string
+  previousHash: string
+  eventHash: string
+}
+
+export interface AuditVerification {
+  isValid: boolean
+  eventCount: number
+  firstSequence: number | null
+  lastSequence: number | null
+  failure: string | null
+}
+
+export interface NamedCount {
+  name: string
+  count: number
+}
+
+export interface TechnicianReport {
+  technicianId: string
+  technicianName: string
+  assigned: number
+  inProgress: number
+  awaitingClientApproval: number
+  completed: number
+}
+
+export interface CustomerReport {
+  customerId: string
+  customerReference: string
+  customerName: string
+  total: number
+  open: number
+  completed: number
+}
+
+export interface OperationsReport {
+  totalWorkOrders: number
+  openWorkOrders: number
+  completedWorkOrders: number
+  completionRate: number
+  averageCompletionHours: number | null
+  attachmentCount: number
+  auditEventCount: number
+  statusCounts: NamedCount[]
+  priorityCounts: NamedCount[]
+  technicians: TechnicianReport[]
+  customers: CustomerReport[]
+  generatedAt: string
+}
