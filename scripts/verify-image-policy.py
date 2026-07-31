@@ -33,11 +33,43 @@ IMAGE_EXTENSIONS = {
     ".svg",
 }
 
+IGNORED_DIRECTORY_NAMES = {
+    ".git",
+    ".fieldops-runtime",
+    ".cache",
+    "node_modules",
+    "bin",
+    "obj",
+    "dist",
+    "coverage",
+    "playwright-report",
+    "test-results",
+    "__pycache__",
+}
+
+
+def is_generated_or_dependency_file(
+    path: Path,
+) -> bool:
+    relative_parts = (
+        path
+        .relative_to(REPOSITORY)
+        .parts
+    )
+
+    return any(
+        part in IGNORED_DIRECTORY_NAMES
+        for part in relative_parts
+    )
+
+
 images = sorted(
     path
     for path in REPOSITORY.rglob("*")
     if path.is_file()
-    and ".git" not in path.parts
+    and not is_generated_or_dependency_file(
+        path
+    )
     and path.suffix.lower()
         in IMAGE_EXTENSIONS
 )
