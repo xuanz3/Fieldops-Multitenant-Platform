@@ -1,0 +1,149 @@
+.demo-account-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 1.5rem 0;
+}
+
+.workflow-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.45fr)
+    minmax(320px, 0.8fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.workflow-card-list {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.workflow-card-list-wide {
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+}
+
+.workflow-card {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  padding: 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--surface-soft);
+}
+
+.workflow-card h2,
+.workflow-card h3 {
+  margin: 0 0 0.4rem;
+}
+
+.workflow-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.workflow-card-decision {
+  border-color: #c9d9e8;
+  background: #fbfdff;
+}
+
+.workflow-action-stack {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.workflow-note {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.9rem;
+  border: 1px solid #d6e4f2;
+  border-radius: 0.7rem;
+  background: #f1f7fc;
+  color: #3d5872;
+}
+
+.workflow-note span {
+  line-height: 1.6;
+}
+
+.workflow-note-success {
+  border-color: #c9e5d1;
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.badge-row-left {
+  justify-content: flex-start;
+}
+
+.ownership-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.ownership-row {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(150px, 0.8fr)
+    auto;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--soft-line);
+}
+
+.ownership-row:last-child {
+  border-bottom: 0;
+}
+
+.ownership-row > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.ownership-row span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.ownership-row select {
+  min-height: 2.55rem;
+  width: 100%;
+  padding: 0.58rem 0.65rem;
+  border: 1px solid #cfd8e3;
+  border-radius: 0.62rem;
+  background: #ffffff;
+  color: var(--ink);
+}
+
+@media (max-width: 1100px) {
+  .workflow-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .workflow-card-list,
+  .workflow-card-list-wide {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .demo-account-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ownership-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ownership-row .button {
+    width: 100%;
+  }
+}

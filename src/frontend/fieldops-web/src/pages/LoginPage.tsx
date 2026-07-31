@@ -22,8 +22,18 @@ const demo = {
     'dispatcher@northside.example.test',
   admin:
     'admin@northside.example.test',
+  technician:
+    'technician@northside.example.test',
+  client:
+    'client@northside.example.test',
   password: 'FieldOps-Demo-2026!',
 }
+
+type DemoAccount =
+  | 'dispatcher'
+  | 'admin'
+  | 'technician'
+  | 'client'
 
 export function LoginPage() {
   const {
@@ -84,7 +94,7 @@ export function LoginPage() {
   }
 
   function chooseAccount(
-    account: 'dispatcher' | 'admin',
+    account: DemoAccount,
   ) {
     setTenantSlug(demo.tenantSlug)
     setEmail(demo[account])
@@ -100,31 +110,31 @@ export function LoginPage() {
         </p>
         <h1>FieldOps Hub</h1>
         <p>
-          A secure operations workspace for
-          customers, work orders and field
-          service delivery.
+          A secure role-based workflow from
+          dispatch through field execution and
+          client approval.
         </p>
 
         <div className="login-feature-grid">
           <article>
-            <strong>Signed tenant boundary</strong>
+            <strong>Dispatcher control</strong>
             <span>
-              Every business request is scoped
-              by the validated JWT tenant claim.
+              Link clients, assign technicians
+              and manage operational records.
             </span>
           </article>
           <article>
-            <strong>Role-aware workspace</strong>
+            <strong>Technician execution</strong>
             <span>
-              Tenant Admin and Dispatcher users
-              manage operational records.
+              Start assigned work and submit
+              completion notes for approval.
             </span>
           </article>
           <article>
-            <strong>Protected updates</strong>
+            <strong>Client decision</strong>
             <span>
-              Work-order version checks prevent
-              silent overwrites.
+              Approve completed work or reopen
+              it with a recorded reason.
             </span>
           </article>
         </div>
@@ -142,12 +152,11 @@ export function LoginPage() {
             Sign in
           </h2>
           <p className="muted">
-            Use the fictional local accounts
-            below. No real personal data is used.
+            Choose one of four fictional roles.
           </p>
         </div>
 
-        <div className="demo-account-row">
+        <div className="demo-account-grid">
           <button
             type="button"
             className="button button-secondary"
@@ -155,7 +164,25 @@ export function LoginPage() {
               chooseAccount('dispatcher')
             }
           >
-            Use Dispatcher
+            Dispatcher
+          </button>
+          <button
+            type="button"
+            className="button button-secondary"
+            onClick={() =>
+              chooseAccount('technician')
+            }
+          >
+            Technician
+          </button>
+          <button
+            type="button"
+            className="button button-secondary"
+            onClick={() =>
+              chooseAccount('client')
+            }
+          >
+            Client
           </button>
           <button
             type="button"
@@ -164,7 +191,7 @@ export function LoginPage() {
               chooseAccount('admin')
             }
           >
-            Use Tenant Admin
+            Tenant Admin
           </button>
         </div>
 

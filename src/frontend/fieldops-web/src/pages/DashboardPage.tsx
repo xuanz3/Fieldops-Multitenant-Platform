@@ -5,23 +5,23 @@ import {
 } from 'react'
 import { ApiError } from '../api/client'
 import {
+  listClientWorkOrders,
   listCustomers,
+  listTechnicianWorkOrders,
   listWorkOrders,
 } from '../api/fieldOpsApi'
 import { useAuth } from '../auth/useAuth'
 import { Feedback } from '../components/Feedback'
 import { PageHeader } from '../components/PageHeader'
 import { StatusBadge } from '../components/StatusBadge'
-import type {
-  Customer,
-  WorkOrder,
-} from '../types'
+import type { WorkOrder } from '../types'
 
 interface DashboardData {
-  customerCount: number
-  workOrderCount: number
-  recentWorkOrders: WorkOrder[]
-  customers: Customer[]
+  primaryLabel: string
+  primaryCount: number
+  secondaryLabel: string
+  secondaryCount: number
+  workOrders: WorkOrder[]
 }
 
 export function DashboardPage() {
@@ -43,36 +43,99 @@ export function DashboardPage() {
     setError(null)
 
     try {
-      const [
-        customerPage,
-        workOrderPage,
-      ] = await Promise.all([
-        listCustomers(
-          session.accessToken,
-          {
-            page: 1,
-            pageSize: 5,
-          },
-        ),
-        listWorkOrders(
-          session.accessToken,
-          {
-            page: 1,
-            pageSize: 5,
-          },
-        ),
-      ])
+      if (
+        session.user.role ===
+          'TenantAdmin' ||
+        session.user.role ===
+          'Dispatcher'
+      ) {
+        const [
+          customers,
+          workOrders,
+        ] = await Promise.all([
+          listCustomers(
+            session.accessToken,
+            {
+              page: 1,
+              pageSize: 5,
+            },
+          ),
+          listWorkOrders(
+            session.accessToken,
+            {
+              page: 1,
+              pageSize: 5,
+            },
+          ),
+        ])
 
-      setData({
-        customerCount:
-          customerPage.totalCount,
-        workOrderCount:
-          workOrderPage.totalCount,
-        recentWorkOrders:
-          workOrderPage.items,
-        customers:
-          customerPage.items,
-      })
+        setData({
+          primaryLabel: 'Customers',
+          primaryCount:
+            customers.totalCount,
+          secondaryLabel: 'Work orders',
+          secondaryCount:
+            workOrders.totalCount,
+          workOrders:
+            workOrders.items,
+        })
+      } else if (
+        session.user.role ===
+        'Technician'
+      ) {
+        const workOrders =
+          await listTechnicianWorkOrders(
+            session.accessToken,
+          )
+
+        setData({
+          primaryLabel: 'Assigned tasks',
+          primaryCount:
+            workOrders.filter(
+              (item) =>
+                item.status ===
+                  'Assigned' ||
+                item.status ===
+                  'InProgress',
+            ).length,
+          secondaryLabel:
+            'Awaiting client',
+          secondaryCount:
+            workOrders.filter(
+              (item) =>
+                item.status ===
+                'AwaitingClientApproval',
+            ).length,
+          workOrders:
+            workOrders.slice(0, 5),
+        })
+      } else {
+        const workOrders =
+          await listClientWorkOrders(
+            session.accessToken,
+          )
+
+        setData({
+          primaryLabel:
+            'Awaiting approval',
+          primaryCount:
+            workOrders.filter(
+              (item) =>
+                item.status ===
+                'AwaitingClientApproval',
+            ).length,
+          secondaryLabel:
+            'Completed work',
+          secondaryCount:
+            workOrders.filter(
+              (item) =>
+                item.status ===
+                'Completed',
+            ).length,
+          workOrders:
+            workOrders.slice(0, 5),
+        })
+      }
     } catch (reason) {
       setError(
         reason instanceof ApiError
@@ -85,24 +148,26 @@ export function DashboardPage() {
   }, [session])
 
   useEffect(() => {
-    const loadTimer =
-      window.setTimeout(() => {
+    const timer = window.setTimeout(
+      () => {
         void load()
-      }, 0)
+      },
+      0,
+    )
 
     return () =>
-      window.clearTimeout(loadTimer)
+      window.clearTimeout(timer)
   }, [load])
 
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Operations overview"
+        eyebrow="Role workspace"
         title="Dashboard"
         description={
           session
-            ? `Live tenant-scoped data for ${session.user.tenantName}.`
-            : 'Live tenant-scoped operational data.'
+            ? `${session.user.role} view for ${session.user.tenantName}.`
+            : 'Role-aware operational overview.'
         }
         actions={
           <button
@@ -126,7 +191,7 @@ export function DashboardPage() {
       {loading ? (
         <Feedback
           title="Loading dashboard"
-          message="Reading current tenant data from the API."
+          message="Reading the role-authorised workflow."
         />
       ) : null}
 
@@ -134,25 +199,29 @@ export function DashboardPage() {
         <>
           <section
             className="metric-grid"
-            aria-label="Tenant metrics"
+            aria-label="Role metrics"
           >
             <article className="metric-card">
-              <span>Customers</span>
+              <span>
+                {data.primaryLabel}
+              </span>
               <strong>
-                {data.customerCount}
+                {data.primaryCount}
               </strong>
               <small>
-                Active tenant records
+                Current tenant scope
               </small>
             </article>
 
             <article className="metric-card">
-              <span>Work orders</span>
+              <span>
+                {data.secondaryLabel}
+              </span>
               <strong>
-                {data.workOrderCount}
+                {data.secondaryCount}
               </strong>
               <small>
-                All current statuses
+                Live workflow status
               </small>
             </article>
 
@@ -162,99 +231,66 @@ export function DashboardPage() {
                 {session?.user.role}
               </strong>
               <small>
-                API policy identity
+                Signed JWT policy
               </small>
             </article>
           </section>
 
-          <section className="content-grid">
-            <article className="panel panel-large">
-              <div className="panel-heading">
-                <div>
-                  <p className="eyebrow">
-                    Work queue
-                  </p>
-                  <h2>Recent work orders</h2>
-                </div>
+          <section className="panel">
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">
+                  Current queue
+                </p>
+                <h2>
+                  Recent work orders
+                </h2>
               </div>
+            </div>
 
-              {data.recentWorkOrders.length === 0 ? (
-                <Feedback
-                  title="No work orders"
-                  message="Create the first work order from the Work orders page."
-                />
-              ) : (
-                <div className="record-list">
-                  {data.recentWorkOrders.map(
-                    (workOrder) => (
-                      <article
-                        key={workOrder.id}
-                        className="record-row"
-                      >
-                        <div>
-                          <strong>
-                            {workOrder.reference}
-                          </strong>
-                          <span>
-                            {workOrder.title}
-                          </span>
-                          <small>
-                            {
-                              workOrder.customerName
-                            }
-                          </small>
-                        </div>
-                        <div className="record-meta">
-                          <StatusBadge
-                            value={
-                              workOrder.status
-                            }
-                          />
-                          <StatusBadge
-                            value={
-                              workOrder.priority
-                            }
-                          />
-                        </div>
-                      </article>
-                    ),
-                  )}
-                </div>
-              )}
-            </article>
-
-            <article className="panel">
-              <div className="panel-heading">
-                <div>
-                  <p className="eyebrow">
-                    Customer directory
-                  </p>
-                  <h2>Current customers</h2>
-                </div>
-              </div>
-
-              {data.customers.length === 0 ? (
-                <Feedback
-                  title="No customers"
-                  message="Create a customer before adding work orders."
-                />
-              ) : (
-                <div className="compact-list">
-                  {data.customers.map(
-                    (customer) => (
-                      <div key={customer.id}>
+            {data.workOrders.length === 0 ? (
+              <Feedback
+                title="No work orders"
+                message="There are no records in this role queue."
+              />
+            ) : (
+              <div className="record-list">
+                {data.workOrders.map(
+                  (workOrder) => (
+                    <article
+                      key={workOrder.id}
+                      className="record-row"
+                    >
+                      <div>
                         <strong>
-                          {customer.name}
+                          {workOrder.reference}
                         </strong>
                         <span>
-                          {customer.reference}
+                          {workOrder.title}
                         </span>
+                        <small>
+                          {
+                            workOrder.customerName
+                          }
+                        </small>
                       </div>
-                    ),
-                  )}
-                </div>
-              )}
-            </article>
+                      <div className="record-meta">
+                        <StatusBadge
+                          value={
+                            workOrder.status
+                          }
+                        />
+                        <StatusBadge
+                          value={
+                            workOrder.priority
+                          }
+                        />
+                      </div>
+                    </article>
+                  ),
+                )}
+              </div>
+            )}
           </section>
         </>
       ) : null}
