@@ -117,8 +117,8 @@ app.MapWorkOrderEndpoints();
 app.MapGet("/api/info", () => Results.Ok(new
 {
     service = "FieldOps.Api",
-    phase = 4,
-    status = "customer-work-order-rest-apis",
+    phase = 5,
+    status = "frontend-business-workspace",
     timestamp = DateTimeOffset.UtcNow
 }));
 

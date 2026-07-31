@@ -4,7 +4,7 @@
 
 FieldOps Hub is a portfolio-grade multi-tenant field service operations platform for managing customers, work orders, technician assignments, attachments, approvals and audit records.
 
-> Status: Phase 4 complete. The backend now exposes tenant-safe Customer and WorkOrder REST APIs on top of tested PostgreSQL isolation, JWT authentication and role authorisation.
+> Status: Phase 5 complete. The project now includes an authenticated browser workspace for tenant-safe Customer and WorkOrder operations.
 
 ## Current capabilities
 
@@ -15,17 +15,42 @@ FieldOps Hub is a portfolio-grade multi-tenant field service operations platform
 - JWT access-token issuance and validation
 - Signed tenant identity
 - Tenant Admin, Dispatcher, Technician and Client roles
-- Customer list, search, pagination, detail, create and update APIs
-- WorkOrder list, filter, pagination, detail, create and update APIs
+- Customer and WorkOrder REST APIs
 - WorkOrder optimistic concurrency through Version
+- React login and protected application routes
+- Tenant dashboard
+- Customer search, pagination, create and update UI
+- WorkOrder search, filtering, create and update UI
+- Responsive and accessible browser workspace
 - Fictional two-tenant demonstration data
-- Unit, PostgreSQL and real HTTP API tests
+- Unit, PostgreSQL, HTTP API and frontend tests
+- Browser-to-real-API smoke validation
 - GitHub Actions quality gates
 - Local-first, cloud-portable architecture
 
+## Run the local demonstration
+
+On macOS, double-click:
+
+`START_LOCAL_DEMO.command`
+
+Or run:
+
+```bash
+./scripts/start-local-demo.sh
+```
+
+Then open `http://127.0.0.1:5173`.
+
+Fictional demo credentials:
+
+- Tenant: `northside-property-services`
+- Email: `dispatcher@northside.example.test`
+- Password: `FieldOps-Demo-2026!`
+
 ## Verified security behaviour
 
-The automated suite proves tenant-only database queries, cross-tenant relationship rejection, 401 authentication failures, 403 role failures, signed tenant identity, tenant-header spoofing resistance, cross-tenant business-record hiding, stale work-order conflict handling, clean dependency scanning and the final 15-image policy.
+The automated suite proves tenant-only database queries, cross-tenant relationship rejection, 401 authentication failures, 403 role failures, signed tenant identity, tenant-header spoofing resistance, cross-tenant business-record hiding, stale work-order conflict handling, session expiry behaviour, clean dependency scanning and the final 15-image policy.
 
 ## Architecture
 
@@ -33,6 +58,7 @@ The automated suite proves tenant-only database queries, cross-tenant relationsh
 - ASP.NET Core modular monolith on .NET 10 LTS
 - PostgreSQL and Entity Framework Core
 - Docker-based local services
+- Vite local reverse proxy
 - GitHub Actions continuous integration
 
 ## Development approach
@@ -44,15 +70,14 @@ The repository does not retain process screenshots. A maximum of 15 final produc
 ## Documentation
 
 - [Project charter](docs/project-charter.md)
-- [Phase 2 retrospective](docs/phases/phase-02-retrospective.md)
 - [Phase 3 authentication and authorisation](docs/phases/phase-03-authentication-authorisation.md)
 - [Phase 4 Customer and WorkOrder APIs](docs/phases/phase-04-customer-workorder-rest-apis.md)
-- [Token-derived tenant decision](docs/decisions/ADR-006-token-derived-tenant-context.md)
-- [REST boundary and concurrency decision](docs/decisions/ADR-007-rest-boundaries-and-concurrency.md)
-- [Phase 4 API tests](docs/testing/phase-04-api-test-results.md)
-- [v0.4.0 release notes](docs/releases/v0.4.0.md)
+- [Phase 5 frontend business workspace](docs/phases/phase-05-frontend-business-workspace.md)
+- [Browser session and API proxy decision](docs/decisions/ADR-008-browser-session-and-api-proxy.md)
+- [Phase 5 frontend tests](docs/testing/phase-05-frontend-test-results.md)
+- [v0.5.0 release notes](docs/releases/v0.5.0.md)
 - [Final screenshot plan](docs/evidence/FINAL_SCREENSHOT_PLAN.md)
 
 ## Current limitations
 
-The production frontend, technician assignment, Client ownership, workflow transition endpoints, attachments, audit persistence, reporting, refresh tokens, MFA and cloud deployment are not implemented yet.
+Technician assignment, Client ownership, workflow transition controls, attachments, audit persistence, reporting, refresh tokens, MFA, secure production cookie authentication and cloud deployment are not implemented yet.
