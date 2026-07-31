@@ -9,7 +9,8 @@ using Npgsql;
 
 namespace FieldOps.IntegrationTests;
 
-public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
+public sealed class PostgreSqlDatabaseFixture
+    : IAsyncLifetime
 {
     public const string TestPassword =
         "FieldOps-Test-2026!";
@@ -36,19 +37,34 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
         "admin@bayside.example.test";
 
     public static readonly Guid NorthsideTenantId =
-        Guid.Parse("11111111-1111-1111-1111-111111111111");
+        Guid.Parse(
+            "11111111-1111-1111-1111-111111111111");
 
     public static readonly Guid BaysideTenantId =
-        Guid.Parse("22222222-2222-2222-2222-222222222222");
+        Guid.Parse(
+            "22222222-2222-2222-2222-222222222222");
 
     public static readonly Guid NorthsideCustomerId =
-        Guid.Parse("11111111-1111-1111-1111-111111110001");
+        Guid.Parse(
+            "11111111-1111-1111-1111-111111110001");
 
     public static readonly Guid BaysideCustomerId =
-        Guid.Parse("22222222-2222-2222-2222-222222220001");
+        Guid.Parse(
+            "22222222-2222-2222-2222-222222220001");
 
     public static readonly Guid BaysideWorkOrderId =
-        Guid.Parse("22222222-2222-2222-2222-222222220101");
+        Guid.Parse(
+            "22222222-2222-2222-2222-222222220101");
+
+    public static readonly Guid
+        NorthsideTechnicianUserId =
+            Guid.Parse(
+                "11111111-1111-1111-1111-111111130003");
+
+    public static readonly Guid
+        NorthsideClientUserId =
+            Guid.Parse(
+                "11111111-1111-1111-1111-111111130004");
 
     private string? _adminConnectionString;
     private string? _databaseName;
@@ -214,7 +230,8 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
                 "Northside Admin",
                 passwordHasher.Hash(TestPassword),
                 UserRole.TenantAdmin,
-                Guid.Parse("11111111-1111-1111-1111-111111130001"),
+                Guid.Parse(
+                    "11111111-1111-1111-1111-111111130001"),
                 timestamp),
             new UserAccount(
                 NorthsideTenantId,
@@ -222,7 +239,8 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
                 "Northside Dispatcher",
                 passwordHasher.Hash(TestPassword),
                 UserRole.Dispatcher,
-                Guid.Parse("11111111-1111-1111-1111-111111130002"),
+                Guid.Parse(
+                    "11111111-1111-1111-1111-111111130002"),
                 timestamp),
             new UserAccount(
                 NorthsideTenantId,
@@ -230,7 +248,7 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
                 "Northside Technician",
                 passwordHasher.Hash(TestPassword),
                 UserRole.Technician,
-                Guid.Parse("11111111-1111-1111-1111-111111130003"),
+                NorthsideTechnicianUserId,
                 timestamp),
             new UserAccount(
                 NorthsideTenantId,
@@ -238,7 +256,7 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
                 "Northside Client",
                 passwordHasher.Hash(TestPassword),
                 UserRole.Client,
-                Guid.Parse("11111111-1111-1111-1111-111111130004"),
+                NorthsideClientUserId,
                 timestamp),
             new UserAccount(
                 BaysideTenantId,
@@ -246,7 +264,8 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
                 "Bayside Admin",
                 passwordHasher.Hash(TestPassword),
                 UserRole.TenantAdmin,
-                Guid.Parse("22222222-2222-2222-2222-222222230001"),
+                Guid.Parse(
+                    "22222222-2222-2222-2222-222222230001"),
                 timestamp));
 
         await dbContext.SaveChangesAsync();
@@ -258,13 +277,15 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
                 "Northside Demo Client",
                 "northside@example.test",
                 NorthsideCustomerId,
-                timestamp),
+                timestamp,
+                NorthsideClientUserId),
             new Customer(
                 NorthsideTenantId,
                 "CLIENT-002",
                 "Northside Retail Demo",
                 "northside-retail@example.test",
-                Guid.Parse("11111111-1111-1111-1111-111111110002"),
+                Guid.Parse(
+                    "11111111-1111-1111-1111-111111110002"),
                 timestamp),
             new Customer(
                 BaysideTenantId,
@@ -284,16 +305,19 @@ public sealed class PostgreSqlDatabaseFixture : IAsyncLifetime
                 "Inspect leaking kitchen tap",
                 "Fictional test record.",
                 WorkOrderPriority.Normal,
-                Guid.Parse("11111111-1111-1111-1111-111111120001"),
+                Guid.Parse(
+                    "11111111-1111-1111-1111-111111120001"),
                 timestamp),
             new WorkOrder(
                 NorthsideTenantId,
-                Guid.Parse("11111111-1111-1111-1111-111111110002"),
+                Guid.Parse(
+                    "11111111-1111-1111-1111-111111110002"),
                 "WO-1002",
                 "Replace damaged access panel",
                 "Fictional test record.",
                 WorkOrderPriority.High,
-                Guid.Parse("11111111-1111-1111-1111-111111120002"),
+                Guid.Parse(
+                    "11111111-1111-1111-1111-111111120002"),
                 timestamp),
             new WorkOrder(
                 BaysideTenantId,

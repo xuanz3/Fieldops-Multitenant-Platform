@@ -43,53 +43,48 @@ public static class WorkOrderEndpoints
                 pageSize);
 
         var query =
-            from workOrder in
-                dbContext.WorkOrders.AsNoTracking()
-            join customer in
-                dbContext.Customers.AsNoTracking()
-                on workOrder.CustomerId
-                equals customer.Id
-            select new
-            {
-                WorkOrder = workOrder,
-                CustomerName = customer.Name
-            };
+            dbContext.WorkOrders
+                .AsNoTracking()
+                .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(search))
         {
             var pattern =
                 $"%{search.Trim()}%";
 
-            query = query.Where(item =>
+            query = query.Where(workOrder =>
                 EF.Functions.ILike(
-                    item.WorkOrder.Reference,
+                    workOrder.Reference,
                     pattern) ||
                 EF.Functions.ILike(
-                    item.WorkOrder.Title,
+                    workOrder.Title,
                     pattern) ||
-                EF.Functions.ILike(
-                    item.CustomerName,
-                    pattern));
+                dbContext.Customers.Any(customer =>
+                    customer.Id ==
+                        workOrder.CustomerId &&
+                    EF.Functions.ILike(
+                        customer.Name,
+                        pattern)));
         }
 
         if (status.HasValue)
         {
-            query = query.Where(item =>
-                item.WorkOrder.Status ==
+            query = query.Where(workOrder =>
+                workOrder.Status ==
                 status.Value);
         }
 
         if (priority.HasValue)
         {
-            query = query.Where(item =>
-                item.WorkOrder.Priority ==
+            query = query.Where(workOrder =>
+                workOrder.Priority ==
                 priority.Value);
         }
 
         if (customerId.HasValue)
         {
-            query = query.Where(item =>
-                item.WorkOrder.CustomerId ==
+            query = query.Where(workOrder =>
+                workOrder.CustomerId ==
                 customerId.Value);
         }
 
@@ -97,29 +92,23 @@ public static class WorkOrderEndpoints
             await query.CountAsync(
                 cancellationToken);
 
-        var items = await query
-            .OrderByDescending(item =>
-                item.WorkOrder.CreatedAt)
-            .ThenBy(item =>
-                item.WorkOrder.Reference)
+        query = query
+            .OrderByDescending(workOrder =>
+                workOrder.CreatedAt)
+            .ThenBy(workOrder =>
+                workOrder.Reference)
             .Skip(
                 (pagination.Page - 1) *
                 pagination.PageSize)
-            .Take(pagination.PageSize)
-            .Select(item =>
-                new WorkOrderResponse(
-                    item.WorkOrder.Id,
-                    item.WorkOrder.CustomerId,
-                    item.CustomerName,
-                    item.WorkOrder.Reference,
-                    item.WorkOrder.Title,
-                    item.WorkOrder.Description,
-                    item.WorkOrder.Priority,
-                    item.WorkOrder.Status,
-                    item.WorkOrder.Version,
-                    item.WorkOrder.CreatedAt,
-                    item.WorkOrder.UpdatedAt))
-            .ToListAsync(cancellationToken);
+            .Take(pagination.PageSize);
+
+        var items =
+            await WorkOrderResponseQueries
+                .Create(
+                    dbContext,
+                    query)
+                .ToListAsync(
+                    cancellationToken);
 
         var totalPages =
             totalCount == 0
@@ -142,28 +131,19 @@ public static class WorkOrderEndpoints
         FieldOpsDbContext dbContext,
         CancellationToken cancellationToken)
     {
-        var response = await (
-            from workOrder in
-                dbContext.WorkOrders.AsNoTracking()
-            join customer in
-                dbContext.Customers.AsNoTracking()
-                on workOrder.CustomerId
-                equals customer.Id
-            where workOrder.Id == id
-            select new WorkOrderResponse(
-                workOrder.Id,
-                workOrder.CustomerId,
-                customer.Name,
-                workOrder.Reference,
-                workOrder.Title,
-                workOrder.Description,
-                workOrder.Priority,
-                workOrder.Status,
-                workOrder.Version,
-                workOrder.CreatedAt,
-                workOrder.UpdatedAt))
-            .SingleOrDefaultAsync(
-                cancellationToken);
+        var workOrders =
+            dbContext.WorkOrders
+                .AsNoTracking()
+                .Where(workOrder =>
+                    workOrder.Id == id);
+
+        var response =
+            await WorkOrderResponseQueries
+                .Create(
+                    dbContext,
+                    workOrders)
+                .SingleOrDefaultAsync(
+                    cancellationToken);
 
         return response is null
             ? Results.NotFound()
@@ -260,11 +240,24 @@ public static class WorkOrderEndpoints
             });
         }
 
+        var createdWorkOrder =
+            dbContext.WorkOrders
+                .AsNoTracking()
+                .Where(item =>
+                    item.Id ==
+                    workOrder.Id);
+
+        var response =
+            await WorkOrderResponseQueries
+                .Create(
+                    dbContext,
+                    createdWorkOrder)
+                .SingleAsync(
+                    cancellationToken);
+
         return Results.Created(
             $"/api/work-orders/{workOrder.Id}",
-            ToResponse(
-                workOrder,
-                customer.Name));
+            response);
     }
 
     private static async Task<IResult> UpdateAsync(
@@ -347,25 +340,20 @@ public static class WorkOrderEndpoints
                 });
         }
 
-        return Results.Ok(
-            ToResponse(
-                workOrder,
-                customer.Name));
-    }
+        var updatedWorkOrder =
+            dbContext.WorkOrders
+                .AsNoTracking()
+                .Where(item =>
+                    item.Id == id);
 
-    private static WorkOrderResponse ToResponse(
-        WorkOrder workOrder,
-        string customerName) =>
-        new(
-            workOrder.Id,
-            workOrder.CustomerId,
-            customerName,
-            workOrder.Reference,
-            workOrder.Title,
-            workOrder.Description,
-            workOrder.Priority,
-            workOrder.Status,
-            workOrder.Version,
-            workOrder.CreatedAt,
-            workOrder.UpdatedAt);
+        var response =
+            await WorkOrderResponseQueries
+                .Create(
+                    dbContext,
+                    updatedWorkOrder)
+                .SingleAsync(
+                    cancellationToken);
+
+        return Results.Ok(response);
+    }
 }

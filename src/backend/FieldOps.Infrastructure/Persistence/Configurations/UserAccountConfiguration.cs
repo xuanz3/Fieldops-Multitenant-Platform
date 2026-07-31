@@ -15,6 +15,12 @@ public sealed class UserAccountConfiguration
 
         builder.HasKey(user => user.Id);
 
+        builder.HasAlternateKey(user => new
+        {
+            user.TenantId,
+            user.Id
+        });
+
         builder.Property(user => user.Email)
             .HasMaxLength(254)
             .IsRequired();

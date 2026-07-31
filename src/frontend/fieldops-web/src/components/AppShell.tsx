@@ -3,20 +3,66 @@ import {
   Outlet,
 } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
+import type { UserRole } from '../types'
 
-const navigation = [
+interface NavigationItem {
+  to: string
+  label: string
+  end?: boolean
+  roles: UserRole[]
+}
+
+const navigation: NavigationItem[] = [
   {
     to: '/',
     label: 'Dashboard',
     end: true,
+    roles: [
+      'TenantAdmin',
+      'Dispatcher',
+      'Technician',
+      'Client',
+    ],
   },
   {
     to: '/customers',
     label: 'Customers',
+    roles: [
+      'TenantAdmin',
+      'Dispatcher',
+    ],
   },
   {
     to: '/work-orders',
     label: 'Work orders',
+    roles: [
+      'TenantAdmin',
+      'Dispatcher',
+    ],
+  },
+  {
+    to: '/dispatch',
+    label: 'Dispatch',
+    roles: [
+      'TenantAdmin',
+      'Dispatcher',
+    ],
+  },
+  {
+    to: '/technician',
+    label: 'My work',
+    roles: [
+      'TenantAdmin',
+      'Technician',
+    ],
+  },
+  {
+    to: '/client-approvals',
+    label: 'Client approvals',
+    roles: [
+      'TenantAdmin',
+      'Client',
+    ],
   },
 ]
 
@@ -26,6 +72,13 @@ export function AppShell() {
   if (!session) {
     return null
   }
+
+  const visibleNavigation =
+    navigation.filter((item) =>
+      item.roles.includes(
+        session.user.role,
+      ),
+    )
 
   return (
     <div className="app-shell">
@@ -51,7 +104,7 @@ export function AppShell() {
           className="primary-nav"
           aria-label="Primary navigation"
         >
-          {navigation.map((item) => (
+          {visibleNavigation.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

@@ -1,17 +1,21 @@
 using FieldOps.Domain.Customers;
+using FieldOps.Domain.Identity;
 using FieldOps.Domain.Tenants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FieldOps.Infrastructure.Persistence.Configurations;
 
-internal sealed class CustomerConfiguration : IEntityTypeConfiguration<Customer>
+internal sealed class CustomerConfiguration
+    : IEntityTypeConfiguration<Customer>
 {
-    public void Configure(EntityTypeBuilder<Customer> builder)
+    public void Configure(
+        EntityTypeBuilder<Customer> builder)
     {
         builder.ToTable("customers");
 
         builder.HasKey(customer => customer.Id);
+
         builder.HasAlternateKey(customer => new
         {
             customer.TenantId,
@@ -35,9 +39,29 @@ internal sealed class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             customer.Reference
         }).IsUnique();
 
+        builder.HasIndex(customer => new
+        {
+            customer.TenantId,
+            customer.ClientUserId
+        });
+
         builder.HasOne<Tenant>()
             .WithMany()
             .HasForeignKey(customer => customer.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<UserAccount>()
+            .WithMany()
+            .HasForeignKey(customer => new
+            {
+                customer.TenantId,
+                customer.ClientUserId
+            })
+            .HasPrincipalKey(user => new
+            {
+                user.TenantId,
+                user.Id
+            })
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

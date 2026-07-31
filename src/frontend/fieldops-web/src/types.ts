@@ -79,6 +79,14 @@ export interface WorkOrder {
   description: string | null
   priority: WorkOrderPriority
   status: WorkOrderStatus
+  assignedTechnicianId: string | null
+  assignedTechnicianName: string | null
+  assignedAt: string | null
+  startedAt: string | null
+  submittedForApprovalAt: string | null
+  completionSummary: string | null
+  completedAt: string | null
+  clientReopenReason: string | null
   version: number
   createdAt: string
   updatedAt: string
@@ -98,4 +106,24 @@ export interface WorkOrderUpdateInput {
   description: string
   priority: WorkOrderPriority
   version: number
+}
+
+export interface TechnicianOption {
+  id: string
+  displayName: string
+  email: string
+}
+
+export interface ClientOption {
+  id: string
+  displayName: string
+  email: string
+}
+
+export interface CustomerOwnership {
+  customerId: string
+  customerReference: string
+  customerName: string
+  clientUserId: string | null
+  clientDisplayName: string | null
 }
