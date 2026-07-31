@@ -12,6 +12,7 @@ Automated coverage includes:
 - Tenant and WorkOrder ownership enforcement
 - automatic audit creation
 - chain sequence and previous-hash verification
+- PostgreSQL microsecond timestamp normalisation before audit hashing
 - PostgreSQL trigger rejection of direct audit mutation
 - operations report JSON
 - CSV report export

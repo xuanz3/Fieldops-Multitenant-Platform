@@ -10,6 +10,9 @@ public sealed class AuditEvent
     public const string GenesisHash =
         "GENESIS";
 
+    private const long TicksPerMicrosecond =
+        10;
+
     private AuditEvent()
     {
     }
@@ -103,8 +106,9 @@ public sealed class AuditEvent
                 nameof(actorRole),
                 40);
         OccurredAt =
-            occurredAt ??
-            DateTimeOffset.UtcNow;
+            NormaliseTimestamp(
+                occurredAt ??
+                DateTimeOffset.UtcNow);
         PreviousHash =
             string.IsNullOrWhiteSpace(previousHash)
                 ? GenesisHash
@@ -177,6 +181,23 @@ public sealed class AuditEvent
                 WorkOrderId,
                 OccurredAt),
             StringComparison.Ordinal);
+
+    private static DateTimeOffset
+        NormaliseTimestamp(
+            DateTimeOffset value)
+    {
+        var utc =
+            value.ToUniversalTime();
+
+        var microsecondTicks =
+            utc.Ticks -
+            (utc.Ticks %
+             TicksPerMicrosecond);
+
+        return new DateTimeOffset(
+            microsecondTicks,
+            TimeSpan.Zero);
+    }
 
     private static string CalculateHash(
         Guid tenantId,

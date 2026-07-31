@@ -21,6 +21,8 @@ Every event includes:
 
 The event hash is calculated from canonical event data and the previous hash. The first event uses `GENESIS`.
 
+Audit timestamps are normalised to PostgreSQL microsecond precision before hashing. This keeps the stored timestamp and the canonical hash input identical across macOS and Linux.
+
 The API exposes read-only listing and full-chain verification. No update or delete endpoint exists. PostgreSQL also installs a trigger that rejects every `UPDATE` or `DELETE` against `audit_events`.
 
 ## Consequences
