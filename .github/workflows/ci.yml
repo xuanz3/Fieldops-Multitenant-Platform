@@ -29,6 +29,12 @@ jobs:
           --configuration Release
           --no-build
           --verbosity normal
+      - name: NuGet vulnerability scan
+        run: >
+          dotnet list FieldOps.sln
+          package
+          --vulnerable
+          --include-transitive
 
   postgres-integration:
     name: PostgreSQL integration and API security tests
@@ -75,8 +81,10 @@ jobs:
           --verbosity normal
 
   frontend:
-    name: Frontend lint, test and build
+    name: Frontend lint, test, build and audit
     runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
     defaults:
       run:
         working-directory: src/frontend/fieldops-web
@@ -95,14 +103,44 @@ jobs:
         run: npm run test:run
       - name: Build
         run: npm run build
+      - name: npm vulnerability scan
+        run: npm audit --audit-level=moderate
 
   docker-config:
     name: Docker Compose validation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate Compose configuration
+      - name: Validate local Compose
         run: docker compose config
+      - name: Validate production Compose
+        env:
+          POSTGRES_PASSWORD: fieldops-ci-compose-password
+          JWT_SIGNING_KEY: fieldops-ci-compose-signing-key-2026-at-least-forty-eight-characters
+        run: >
+          docker compose
+          -f deploy/docker-compose.production.yml
+          config
+
+  production-images:
+    name: Production container image builds
+    runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API image
+        run: >
+          docker build
+          -f deploy/Dockerfile.api
+          -t fieldops-api:ci
+          .
+      - name: Build web image
+        run: >
+          docker build
+          -f deploy/Dockerfile.web
+          -t fieldops-web:ci
+          .
 
   repository-policy:
     name: Repository evidence policy
