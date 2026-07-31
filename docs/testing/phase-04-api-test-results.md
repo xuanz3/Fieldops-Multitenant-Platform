@@ -14,3 +14,5 @@ The automated suite covers:
 - Existing authentication, role and PostgreSQL tenant isolation checks
 
 Validation also includes the Release build, frontend lint/build, Docker Compose configuration, repository image policy and direct/transitive NuGet vulnerability scanning.
+
+Mutable Business API tests run in a dedicated temporary PostgreSQL database so their created records cannot change Phase 3 authentication baselines.

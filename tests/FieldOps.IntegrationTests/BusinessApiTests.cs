@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace FieldOps.IntegrationTests;
 
-[Collection("PostgreSQL integration")]
+[Collection("Business API PostgreSQL integration")]
 public sealed class BusinessApiTests
     : IDisposable
 {
