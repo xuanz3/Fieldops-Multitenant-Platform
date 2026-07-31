@@ -1,34 +1,52 @@
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+} from 'react-router-dom'
+import { AuthProvider } from './auth/AuthProvider'
+import { AppShell } from './components/AppShell'
+import { ProtectedRoute } from './components/ProtectedRoute'
+import { CustomersPage } from './pages/CustomersPage'
+import { DashboardPage } from './pages/DashboardPage'
+import { LoginPage } from './pages/LoginPage'
+import { NotFoundPage } from './pages/NotFoundPage'
+import { WorkOrdersPage } from './pages/WorkOrdersPage'
 import './App.css'
-
-const capabilities = [
-  'Multi-tenant boundaries',
-  'Role-based work order workflows',
-  'Auditable state changes',
-  'Automated quality gates',
-]
 
 function App() {
   return (
-    <main className="shell">
-      <section className="hero" aria-labelledby="page-title">
-        <p className="eyebrow">Enterprise full-stack portfolio project</p>
-        <h1 id="page-title">FieldOps Hub</h1>
-        <p className="summary">
-          A multi-tenant operations platform for service requests, technician
-          assignments, evidence, approvals and audit records.
-        </p>
-        <span className="status">Phase 1 · Foundation</span>
-      </section>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/login"
+            element={<LoginPage />}
+          />
 
-      <section aria-labelledby="capabilities-title">
-        <h2 id="capabilities-title">Engineering focus</h2>
-        <ul className="capability-grid">
-          {capabilities.map((capability) => (
-            <li key={capability}>{capability}</li>
-          ))}
-        </ul>
-      </section>
-    </main>
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AppShell />}>
+              <Route
+                index
+                element={<DashboardPage />}
+              />
+              <Route
+                path="customers"
+                element={<CustomersPage />}
+              />
+              <Route
+                path="work-orders"
+                element={<WorkOrdersPage />}
+              />
+            </Route>
+          </Route>
+
+          <Route
+            path="*"
+            element={<NotFoundPage />}
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

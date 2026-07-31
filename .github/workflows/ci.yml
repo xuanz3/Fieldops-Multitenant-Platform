@@ -75,7 +75,7 @@ jobs:
           --verbosity normal
 
   frontend:
-    name: Frontend lint and build
+    name: Frontend lint, test and build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -91,6 +91,8 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint
+      - name: Unit and component tests
+        run: npm run test:run
       - name: Build
         run: npm run build
 
