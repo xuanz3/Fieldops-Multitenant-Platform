@@ -20,3 +20,5 @@ The Phase 5 validation includes:
 - Repository 15-image policy
 
 Mutable PostgreSQL test collections remain isolated so UI-era API tests cannot change earlier security baselines.
+
+The frontend router is pinned to `react-router-dom@6.30.4` after the version-7 dependency line produced two High npm audit findings.
