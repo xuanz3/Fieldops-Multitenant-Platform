@@ -154,9 +154,9 @@ app.MapGet(
     () => Results.Ok(new
     {
         service = "FieldOps.Api",
-        phase = 7,
+        phase = 8,
         status =
-            "evidence-audit-reporting",
+            "portfolio-release",
         timestamp =
             DateTimeOffset.UtcNow
     }));
