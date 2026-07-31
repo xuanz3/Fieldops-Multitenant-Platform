@@ -148,4 +148,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Verify final image policy
-        run: python3 scripts/verify-image-policy.py
+        run: python3 scripts/verify-image-policy.py --expected-count 15
