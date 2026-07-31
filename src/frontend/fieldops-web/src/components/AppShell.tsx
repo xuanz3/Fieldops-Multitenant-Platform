@@ -64,10 +64,37 @@ const navigation: NavigationItem[] = [
       'Client',
     ],
   },
+  {
+    to: '/evidence',
+    label: 'Evidence',
+    roles: [
+      'TenantAdmin',
+      'Dispatcher',
+      'Technician',
+      'Client',
+    ],
+  },
+  {
+    to: '/audit-log',
+    label: 'Audit log',
+    roles: [
+      'TenantAdmin',
+      'Dispatcher',
+    ],
+  },
+  {
+    to: '/reports',
+    label: 'Reports',
+    roles: [
+      'TenantAdmin',
+      'Dispatcher',
+    ],
+  },
 ]
 
 export function AppShell() {
-  const { session, signOut } = useAuth()
+  const { session, signOut } =
+    useAuth()
 
   if (!session) {
     return null
@@ -104,18 +131,24 @@ export function AppShell() {
           className="primary-nav"
           aria-label="Primary navigation"
         >
-          {visibleNavigation.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) =>
-                isActive ? 'active' : undefined
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
+          {visibleNavigation.map(
+            (item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                className={({
+                  isActive,
+                }) =>
+                  isActive
+                    ? 'active'
+                    : undefined
+                }
+              >
+                {item.label}
+              </NavLink>
+            ),
+          )}
         </nav>
 
         <div className="sidebar-session">

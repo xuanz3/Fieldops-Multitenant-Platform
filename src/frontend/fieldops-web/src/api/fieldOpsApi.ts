@@ -1,14 +1,21 @@
-import { apiRequest } from './client'
+import {
+  apiDownload,
+  apiRequest,
+} from './client'
 import type {
+  AuditEvent,
+  AuditVerification,
   ClientOption,
   Customer,
   CustomerInput,
   CustomerOwnership,
   CustomerUpdateInput,
   LoginResponse,
+  OperationsReport,
   PagedResponse,
   TechnicianOption,
   WorkOrder,
+  WorkOrderAttachment,
   WorkOrderInput,
   WorkOrderPriority,
   WorkOrderStatus,
@@ -30,25 +37,44 @@ export interface WorkOrderQuery {
   pageSize?: number
 }
 
+export interface AuditQuery {
+  search?: string
+  action?: string
+  workOrderId?: string
+  page?: number
+  pageSize?: number
+}
+
 function queryString(
   values: Record<
     string,
     string | number | undefined
   >,
 ): string {
-  const params = new URLSearchParams()
+  const params =
+    new URLSearchParams()
 
-  for (const [key, value] of Object.entries(values)) {
+  for (
+    const [key, value]
+    of Object.entries(values)
+  ) {
     if (
       value !== undefined &&
       String(value).trim() !== ''
     ) {
-      params.set(key, String(value))
+      params.set(
+        key,
+        String(value),
+      )
     }
   }
 
-  const query = params.toString()
-  return query ? `?${query}` : ''
+  const query =
+    params.toString()
+
+  return query
+    ? `?${query}`
+    : ''
 }
 
 export function login(
@@ -73,7 +99,9 @@ export function listCustomers(
   token: string,
   query: CustomerQuery,
 ): Promise<PagedResponse<Customer>> {
-  return apiRequest<PagedResponse<Customer>>(
+  return apiRequest<
+    PagedResponse<Customer>
+  >(
     `/api/customers${queryString({
       search: query.search,
       page: query.page,
@@ -93,9 +121,11 @@ export function createCustomer(
       method: 'POST',
       token,
       body: {
-        reference: input.reference,
+        reference:
+          input.reference,
         name: input.name,
-        email: input.email || null,
+        email:
+          input.email || null,
       },
     },
   )
@@ -113,7 +143,8 @@ export function updateCustomer(
       token,
       body: {
         name: input.name,
-        email: input.email || null,
+        email:
+          input.email || null,
       },
     },
   )
@@ -123,12 +154,17 @@ export function listWorkOrders(
   token: string,
   query: WorkOrderQuery,
 ): Promise<PagedResponse<WorkOrder>> {
-  return apiRequest<PagedResponse<WorkOrder>>(
+  return apiRequest<
+    PagedResponse<WorkOrder>
+  >(
     `/api/work-orders${queryString({
       search: query.search,
-      status: query.status || undefined,
-      priority: query.priority || undefined,
-      customerId: query.customerId,
+      status:
+        query.status || undefined,
+      priority:
+        query.priority || undefined,
+      customerId:
+        query.customerId,
       page: query.page,
       pageSize: query.pageSize,
     })}`,
@@ -146,11 +182,15 @@ export function createWorkOrder(
       method: 'POST',
       token,
       body: {
-        customerId: input.customerId,
-        reference: input.reference,
+        customerId:
+          input.customerId,
+        reference:
+          input.reference,
         title: input.title,
-        description: input.description || null,
-        priority: input.priority,
+        description:
+          input.description || null,
+        priority:
+          input.priority,
       },
     },
   )
@@ -167,11 +207,15 @@ export function updateWorkOrder(
       method: 'PUT',
       token,
       body: {
-        customerId: input.customerId,
+        customerId:
+          input.customerId,
         title: input.title,
-        description: input.description || null,
-        priority: input.priority,
-        version: input.version,
+        description:
+          input.description || null,
+        priority:
+          input.priority,
+        version:
+          input.version,
       },
     },
   )
@@ -180,7 +224,9 @@ export function updateWorkOrder(
 export function listTechnicians(
   token: string,
 ): Promise<TechnicianOption[]> {
-  return apiRequest<TechnicianOption[]>(
+  return apiRequest<
+    TechnicianOption[]
+  >(
     '/api/workflow/technicians',
     { token },
   )
@@ -189,7 +235,9 @@ export function listTechnicians(
 export function listClients(
   token: string,
 ): Promise<ClientOption[]> {
-  return apiRequest<ClientOption[]>(
+  return apiRequest<
+    ClientOption[]
+  >(
     '/api/workflow/clients',
     { token },
   )
@@ -198,7 +246,9 @@ export function listClients(
 export function listCustomerOwnership(
   token: string,
 ): Promise<CustomerOwnership[]> {
-  return apiRequest<CustomerOwnership[]>(
+  return apiRequest<
+    CustomerOwnership[]
+  >(
     '/api/workflow/customer-ownership',
     { token },
   )
@@ -241,7 +291,9 @@ export function assignWorkOrder(
 export function listTechnicianWorkOrders(
   token: string,
 ): Promise<WorkOrder[]> {
-  return apiRequest<WorkOrder[]>(
+  return apiRequest<
+    WorkOrder[]
+  >(
     '/api/technician/work-orders',
     { token },
   )
@@ -284,7 +336,9 @@ export function submitWorkOrder(
 export function listClientWorkOrders(
   token: string,
 ): Promise<WorkOrder[]> {
-  return apiRequest<WorkOrder[]>(
+  return apiRequest<
+    WorkOrder[]
+  >(
     '/api/client/work-orders',
     { token },
   )
@@ -321,5 +375,104 @@ export function reopenWorkOrder(
         version,
       },
     },
+  )
+}
+
+export function listAttachments(
+  token: string,
+  workOrderId: string,
+): Promise<WorkOrderAttachment[]> {
+  return apiRequest<
+    WorkOrderAttachment[]
+  >(
+    `/api/work-orders/${workOrderId}/attachments`,
+    { token },
+  )
+}
+
+export function uploadAttachment(
+  token: string,
+  workOrderId: string,
+  file: File,
+): Promise<WorkOrderAttachment> {
+  const form =
+    new FormData()
+
+  form.append(
+    'file',
+    file,
+    file.name,
+  )
+
+  return apiRequest<
+    WorkOrderAttachment
+  >(
+    `/api/work-orders/${workOrderId}/attachments`,
+    {
+      method: 'POST',
+      token,
+      body: form,
+    },
+  )
+}
+
+export function downloadAttachment(
+  token: string,
+  workOrderId: string,
+  attachmentId: string,
+): Promise<Blob> {
+  return apiDownload(
+    `/api/work-orders/${workOrderId}/attachments/${attachmentId}`,
+    token,
+  )
+}
+
+export function listAuditEvents(
+  token: string,
+  query: AuditQuery,
+): Promise<PagedResponse<AuditEvent>> {
+  return apiRequest<
+    PagedResponse<AuditEvent>
+  >(
+    `/api/audit-events${queryString({
+      search: query.search,
+      action: query.action,
+      workOrderId:
+        query.workOrderId,
+      page: query.page,
+      pageSize: query.pageSize,
+    })}`,
+    { token },
+  )
+}
+
+export function verifyAuditChain(
+  token: string,
+): Promise<AuditVerification> {
+  return apiRequest<
+    AuditVerification
+  >(
+    '/api/audit-events/verify',
+    { token },
+  )
+}
+
+export function getOperationsReport(
+  token: string,
+): Promise<OperationsReport> {
+  return apiRequest<
+    OperationsReport
+  >(
+    '/api/reports/operations',
+    { token },
+  )
+}
+
+export function downloadOperationsReport(
+  token: string,
+): Promise<Blob> {
+  return apiDownload(
+    '/api/reports/operations.csv',
+    token,
   )
 }
