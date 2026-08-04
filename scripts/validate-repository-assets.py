@@ -1,39 +1,36 @@
 #!/usr/bin/env python3
 
-from argparse import ArgumentParser
 from pathlib import Path
 import sys
 
-parser = ArgumentParser()
-parser.add_argument(
-    "--expected-count",
-    type=int,
+repository = (
+    Path(__file__)
+    .resolve()
+    .parents[1]
 )
-arguments = parser.parse_args()
 
-REPOSITORY = Path(__file__).resolve().parents[1]
-FINAL_DIRECTORY = (
-    REPOSITORY /
+screen_directory = (
+    repository /
     "docs" /
-    "evidence" /
-    "final"
+    "screens"
 )
 
-IMAGE_EXTENSIONS = {
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".webp",
-    ".gif",
-    ".bmp",
-    ".tif",
-    ".tiff",
-    ".heic",
-    ".avif",
-    ".svg",
+expected_files = {
+    "dashboard.png",
+    "work-orders.png",
+    "create-work-order.png",
+    "work-order-details.png",
+    "dispatch-board.png",
+    "technician-workspace.png",
+    "completion-files.png",
+    "client-review.png",
+    "customers.png",
+    "role-access.png",
+    "audit-log.png",
+    "operations-report.png",
 }
 
-IGNORED_DIRECTORY_NAMES = {
+ignored_directories = {
     ".git",
     ".fieldops-runtime",
     ".cache",
@@ -42,88 +39,89 @@ IGNORED_DIRECTORY_NAMES = {
     "obj",
     "dist",
     "coverage",
-    "playwright-report",
     "test-results",
     "__pycache__",
 }
 
+image_extensions = {
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".webp",
+    ".gif",
+    ".svg",
+}
 
-def is_generated_or_dependency_file(
-    path: Path,
-) -> bool:
-    relative_parts = (
-        path
-        .relative_to(REPOSITORY)
-        .parts
-    )
 
+def is_generated(path: Path) -> bool:
     return any(
-        part in IGNORED_DIRECTORY_NAMES
-        for part in relative_parts
+        part in ignored_directories
+        for part in (
+            path
+            .relative_to(repository)
+            .parts
+        )
     )
 
 
 images = sorted(
     path
-    for path in REPOSITORY.rglob("*")
+    for path in repository.rglob("*")
     if path.is_file()
-    and not is_generated_or_dependency_file(
-        path
-    )
+    and not is_generated(path)
     and path.suffix.lower()
-        in IMAGE_EXTENSIONS
+        in image_extensions
 )
 
-outside_final = []
+errors = []
 
 for image in images:
     try:
         image.resolve().relative_to(
-            FINAL_DIRECTORY.resolve()
+            screen_directory.resolve()
         )
     except ValueError:
-        outside_final.append(image)
+        errors.append(
+            "Image outside docs/screens: "
+            f"{image.relative_to(repository)}"
+        )
 
-print(
-    f"Repository image count: {len(images)}"
+actual_files = {
+    path.name
+    for path in screen_directory.glob("*.png")
+}
+
+missing = sorted(
+    expected_files -
+    actual_files
 )
-print(
-    "Images outside docs/evidence/final: "
-    f"{len(outside_final)}"
+unexpected = sorted(
+    actual_files -
+    expected_files
 )
 
-for image in images:
-    print(
-        "  - "
-        f"{image.relative_to(REPOSITORY)}"
-    )
-
-errors = []
-
-if len(images) > 15:
+if missing:
     errors.append(
-        "The repository contains "
-        f"{len(images)} images; "
-        "the maximum is 15."
+        "Missing application screens: "
+        + ", ".join(missing)
     )
 
-if outside_final:
+if unexpected:
     errors.append(
-        "Images may exist only inside "
-        "docs/evidence/final."
+        "Unexpected application screens: "
+        + ", ".join(unexpected)
     )
 
-if (
-    arguments.expected_count
-    is not None
-    and len(images)
-    != arguments.expected_count
-):
+if len(images) != len(expected_files):
     errors.append(
         "Expected exactly "
-        f"{arguments.expected_count} images "
-        f"but found {len(images)}."
+        f"{len(expected_files)} repository images, "
+        f"found {len(images)}."
     )
+
+print(
+    f"Application screen count: {len(images)}"
+)
 
 if errors:
     for error in errors:
@@ -133,4 +131,4 @@ if errors:
         )
     raise SystemExit(1)
 
-print("Image policy passed.")
+print("Repository asset validation passed.")
