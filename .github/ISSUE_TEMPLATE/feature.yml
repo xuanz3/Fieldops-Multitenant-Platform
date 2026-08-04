@@ -1,20 +1,37 @@
-name: Feature
-about: Propose a scoped product capability
-labels: ["type: feature"]
+name: Feature request
+description: Propose a scoped product capability
+title: "feat: "
+labels:
+  - "type: feature"
 body:
   - type: textarea
+    id: problem
     attributes:
-      label: Goal
-      description: What user or business outcome is required?
+      label: Problem
+      description: Describe the user or business problem.
     validations:
       required: true
+
   - type: textarea
+    id: outcome
+    attributes:
+      label: Expected outcome
+      description: Describe the required observable behaviour.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
     attributes:
       label: Acceptance criteria
-      description: List observable completion conditions.
+      description: List the conditions required for completion.
     validations:
       required: true
+
   - type: textarea
+    id: risk
     attributes:
-      label: Risks and evidence
-      description: Record security, data, testing and screenshot needs.
+      label: Risk and validation
+      description: Describe security, data, testing and migration considerations.
+    validations:
+      required: true
