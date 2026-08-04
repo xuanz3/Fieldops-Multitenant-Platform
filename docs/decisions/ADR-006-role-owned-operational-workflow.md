@@ -1,27 +1,28 @@
-# ADR-006: Role-Owned Operational Workflow
+# ADR-006: Model Workflow Ownership by Role
 
 ## Status
 
-Accepted in Operational workflow.
+Accepted.
+
+## Context
+
+Dispatchers, technicians and clients require different responsibilities within the same work-order lifecycle.
 
 ## Decision
 
-FieldOps models the operational workflow through explicit domain methods and signed user identities:
+Use explicit domain methods and signed user identities to enforce workflow ownership:
 
-- Dispatcher or Tenant Admin links a Client user to a Customer.
-- Dispatcher or Tenant Admin assigns a WorkOrder to an active Technician in the same Tenant.
-- Only the assigned Technician may start and submit that WorkOrder.
-- Only the Client linked to the WorkOrder's Customer may approve or reopen it.
-- Tenant Admin may inspect and exercise all role workflows for administration and demonstration.
+- Tenant Admin or Dispatcher links a Client user to a Customer.
+- Tenant Admin or Dispatcher assigns a work order to an active Technician in the same tenant.
+- Only the assigned Technician may start and submit that work order.
+- Only the Client linked to the work order's Customer may approve or reopen it.
+- Tenant Admin may inspect all role workflows for administration.
 
-All workflow writes require the current WorkOrder `Version`. Stale writes return HTTP 409.
-
-Composite Tenant foreign keys protect Customer-to-Client and WorkOrder-to-Technician relationships at the database level.
+All workflow writes require the current work-order `Version`. Composite tenant foreign keys protect Customer-to-Client and WorkOrder-to-Technician relationships.
 
 ## Consequences
 
-- Tenant headers and request bodies cannot choose another Tenant.
 - A Technician cannot act on another Technician's assignment.
 - A Client cannot view or decide work for an unrelated Customer.
-- Reopened work returns to Dispatcher control and clears the previous Technician assignment.
-- Workflow history currently remains on the WorkOrder record; a separate immutable audit event model is deferred to Evidence, audit and reporting.
+- Reopened work returns to Dispatcher control and clears the previous assignment.
+- Workflow rules are enforced in the domain, API and database layers.

@@ -1,21 +1,22 @@
-# ADR-005: Browser Session and Same-Origin API Proxy
+# ADR-005: Use Session Storage and a Same-Origin API Proxy
 
 ## Status
 
-Accepted in Web application.
+Accepted.
+
+## Context
+
+The browser client needs authenticated API access during local development without requiring a broad cross-origin policy.
 
 ## Decision
 
-The React application stores the demonstration JWT session in `sessionStorage`, not persistent local storage. Closing the browser tab removes the session.
+Store the demonstration JWT in `sessionStorage`, so closing the browser tab clears the session.
 
-During local development, Vite proxies `/api` and `/health` to the ASP.NET Core API on port 5204. The browser therefore uses same-origin requests and the backend does not need a broad development CORS policy.
-
-The production deployment will preserve the same `/api` path through a reverse proxy.
+During local development, Vite proxies `/api` and `/health` to the ASP.NET Core API. The container deployment preserves the same paths through Nginx.
 
 ## Consequences
 
-- The frontend can call authenticated APIs without embedding a separate backend origin.
-- The token is cleared when the tab closes.
-- A 401 or 403 is surfaced explicitly to the operator.
-- The current approach is suitable for the project demonstration.
-- A production-grade deployment should prefer a secure HTTP-only cookie or a dedicated identity provider.
+- The browser uses same-origin API requests.
+- Sessions are removed when the tab closes.
+- Authentication and authorisation failures are shown explicitly.
+- A public deployment should use secure HTTP-only cookies or an external identity provider.

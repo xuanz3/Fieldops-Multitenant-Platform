@@ -1,4 +1,4 @@
-# ADR-003 — Derive Tenant Context from a Signed Access Token
+# ADR-003: Derive Tenant Context from Signed Access Tokens
 
 ## Status
 
@@ -6,14 +6,16 @@ Accepted.
 
 ## Context
 
-FieldOps Hub stores multiple organisations in one PostgreSQL database. A caller must not be able to select another tenant by changing a query string, request body or HTTP header.
+A caller must not be able to select another tenant by modifying a query string, request body or HTTP header.
 
 ## Decision
 
-After successful login, the API signs a JWT containing the user ID, tenant ID, tenant slug, role, display name, email, issue time and expiry time.
+After login, the API issues a signed JWT containing the user ID, tenant ID, tenant slug, role, display name, email, issue time and expiry time.
 
-Authenticated requests derive `ITenantContext` only from the validated `tenant_id` claim. The API does not accept a tenant-selection header as an authority source.
+Authenticated requests derive `ITenantContext` only from the validated `tenant_id` claim. Request headers and payload fields are not accepted as tenant-authority sources.
 
 ## Consequences
 
-The tenant identity is protected by signature, issuer, audience and lifetime validation. EF Core query filters receive the authenticated tenant automatically. A compromised signing key could still produce trusted claims, so the key must remain outside source control.
+- Tenant identity is protected by signature, issuer, audience and lifetime validation.
+- Entity Framework Core query filters receive the authenticated tenant automatically.
+- Signing keys must remain outside source control and be rotated through the deployment environment.

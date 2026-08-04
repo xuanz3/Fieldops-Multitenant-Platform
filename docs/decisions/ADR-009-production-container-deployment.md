@@ -1,34 +1,34 @@
-# ADR-009: Production Container Deployment
+# ADR-009: Package the System as Three Container Services
 
 ## Status
 
-Accepted in Production release.
+Accepted.
+
+## Context
+
+The system needs a repeatable deployment that preserves a clear boundary between the browser application, API and database.
 
 ## Decision
 
-FieldOps Hub is packaged as three production services:
+Package FieldOps Hub as:
 
-- Nginx-hosted React application
-- ASP.NET Core API
-- PostgreSQL 17 database
+- Nginx serving the compiled React application
+- A private ASP.NET Core API service
+- A private PostgreSQL 17 service
 
-The web service is the only host-exposed service. It serves the compiled React application and reverse-proxies `/api` and `/health` to the private API service.
+Only Nginx publishes a host port. It proxies `/api` and `/health` to the API. The API applies Entity Framework Core migrations and repeatable fictional seed data before starting. PostgreSQL uses a persistent volume.
 
-The API applies Entity Framework migrations and fictional demonstration seed data before starting. The database uses a persistent Docker volume and is not exposed to the host in the production Compose configuration.
+Secrets are supplied through an external environment file and are not committed.
 
-Deployment secrets are supplied through an external environment file and are never committed.
-
-## Health model
+## Health Checks
 
 - PostgreSQL uses `pg_isready`.
 - ASP.NET Core exposes `/health`.
 - Nginx exposes `/web-health`.
-- Service startup order is gated by Docker health checks.
-
-## Portability
-
-`deploy/docker-compose.production.yml` runs on a local workstation or a Linux virtual machine with Docker Compose. This demonstrates a production-style deployment boundary without claiming that the reference deployment is a permanently hosted public service.
+- Service startup order is gated by Docker health status.
 
 ## Consequences
 
-The final project can prove build, startup, migration, health and service isolation with no cloud charge. Public HTTPS hosting, managed secrets, backups, observability and managed PostgreSQL remain environment-specific production concerns.
+- The same Compose configuration can run on a workstation or Docker-enabled Linux host.
+- Service health, migration and network boundaries are reproducible.
+- A public deployment still requires HTTPS, managed secrets, backups, observability and an environment-specific recovery plan.

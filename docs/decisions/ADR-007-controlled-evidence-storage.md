@@ -1,31 +1,31 @@
-# ADR-007: Controlled Evidence Storage
+# ADR-007: Store Controlled Work-Order Attachments
 
 ## Status
 
-Accepted in Evidence, audit and reporting.
+Accepted.
+
+## Context
+
+Small work-order files must be available in the local and container environments with predictable access control and integrity metadata.
 
 ## Decision
 
-FieldOps stores small project demonstration attachments directly in PostgreSQL together with immutable metadata:
+Store attachment bytes in PostgreSQL with:
 
-- WorkOrder and Tenant identity
-- original safe file name
-- allow-listed content type
-- file size
+- Tenant and work-order identity
+- Safe original file name
+- Allow-listed content type
+- File size
 - SHA-256 digest
-- uploader identity snapshot
-- upload timestamp
-- file bytes
+- Uploader identity snapshot
+- Upload timestamp
 
-Uploads are limited to 5 MB and to PDF, PNG, JPEG and TXT. The API validates both the declared content type and extension. File names are reduced to the final path component.
+Uploads are limited to 5 MB and to PDF, PNG, JPEG and TXT. The API validates the declared content type and extension and reduces file names to the final path component.
 
-Read access follows the WorkOrder boundary:
-
-- Tenant Admin and Dispatcher may read all Tenant evidence.
-- A Technician may read and upload evidence only for assigned WorkOrders.
-- A Client may read evidence only for WorkOrders belonging to linked Customer records.
-- Clients cannot upload.
+Read and upload access follows tenant, role and work-order ownership.
 
 ## Consequences
 
-PostgreSQL byte storage keeps the local-first demonstration deterministic and avoids paid object storage. For a production-scale deployment, the metadata contract can remain while the file bytes move behind an object-storage adapter with malware scanning and signed download URLs.
+- Local and container deployments remain deterministic.
+- Attachment integrity can be checked through SHA-256 metadata.
+- Large-scale deployment can retain the metadata contract while moving bytes to object storage with malware scanning and signed URLs.

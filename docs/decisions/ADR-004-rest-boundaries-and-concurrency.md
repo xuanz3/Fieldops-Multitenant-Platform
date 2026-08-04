@@ -1,21 +1,23 @@
-# ADR-004: Tenant-Safe REST Boundaries and Work Order Concurrency
+# ADR-004: Enforce Tenant-Safe REST Boundaries and Optimistic Concurrency
 
 ## Status
 
-Accepted in Customer and work-order API.
+Accepted.
+
+## Context
+
+Customer and work-order APIs must prevent cross-tenant access and avoid silent overwrites when two users edit the same work order.
 
 ## Decision
 
-Customer and WorkOrder endpoints use the authenticated JWT tenant claim through `ITenantContext`. Entity Framework query filters remain the authoritative data boundary.
+Customer and work-order endpoints use the authenticated tenant context. Entity Framework Core query filters remain the default data boundary, and endpoint policies limit management actions to authorised roles.
 
-Customer and WorkOrder management is limited to Tenant Admin and Dispatcher roles during this Phase. Technician assignment and Client ownership rules are deferred until the workflow model exists.
-
-WorkOrder updates require the caller's current `Version`. A stale version returns HTTP 409 and Entity Framework also treats the column as a concurrency token.
+Work-order updates require the caller's current `Version`. A stale version returns HTTP 409, and Entity Framework Core treats the version column as a concurrency token.
 
 ## Consequences
 
-- Caller-supplied tenant headers cannot select another tenant.
+- Caller-supplied tenant values cannot select another tenant.
 - Cross-tenant identifiers behave as not found.
 - Duplicate tenant-scoped references return conflict.
-- Concurrent edits cannot silently overwrite a newer work order.
-- Delete endpoints are intentionally absent because operational history must be preserved.
+- Concurrent edits cannot silently overwrite newer data.
+- Work-order deletion is intentionally absent to preserve operational history.
