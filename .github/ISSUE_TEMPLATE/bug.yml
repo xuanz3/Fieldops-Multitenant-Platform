@@ -1,20 +1,37 @@
-name: Bug
-about: Report incorrect or unexpected behaviour
-labels: ["type: bug"]
+name: Bug report
+description: Report incorrect or unexpected behaviour
+title: "bug: "
+labels:
+  - "type: bug"
 body:
   - type: textarea
+    id: observed
     attributes:
       label: Observed behaviour
+      description: Describe what happened.
     validations:
       required: true
+
   - type: textarea
+    id: expected
     attributes:
       label: Expected behaviour
+      description: Describe what should have happened.
     validations:
       required: true
+
   - type: textarea
+    id: reproduction
     attributes:
-      label: Reproduction and evidence
-      description: Include version, environment, steps and sanitised evidence.
+      label: Reproduction steps
+      description: Include the version, environment and exact steps.
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Describe the affected users, data or workflow.
     validations:
       required: true

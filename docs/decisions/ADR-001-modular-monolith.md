@@ -1,19 +1,20 @@
-# ADR-001: Use a modular monolith
+# ADR-001: Use a Modular Monolith
 
-- Status: Accepted
-- Date: 2026-07-29
+## Status
+
+Accepted.
 
 ## Context
 
-The platform needs clear business modules, automated testing and deployment evidence, but does not need independent service scaling during the portfolio stage.
+FieldOps Hub needs clear business boundaries, reliable transactions, automated testing and straightforward deployment. The current workload does not require services to scale or deploy independently.
 
 ## Decision
 
-Use one ASP.NET Core deployable application with separate Domain, Application and Infrastructure projects. The React client remains a separate build artifact.
+Use one ASP.NET Core deployable application with separate Domain, Application and Infrastructure projects. Keep the React application as a separate build artifact served through Nginx in the container deployment.
 
 ## Consequences
 
-- Lower operational cost and simpler local reproduction
-- Transactions and debugging remain straightforward
-- Module boundaries must be protected through references and tests
-- A future service split requires evidence of independent scaling or ownership needs
+- Deployment and local development remain simple.
+- Database transactions and debugging remain straightforward.
+- Module boundaries must be maintained through project references and tests.
+- A future service split requires evidence of independent scaling, availability or ownership needs.

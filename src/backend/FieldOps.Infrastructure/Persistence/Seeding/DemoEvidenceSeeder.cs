@@ -40,7 +40,7 @@ public sealed class DemoEvidenceSeeder
                     "WO-1002-completion-note.txt",
                     "text/plain",
                     Encoding.UTF8.GetBytes(
-                        "Fictional portfolio evidence: access panel replaced, safety checks completed, and the work order submitted for client approval."),
+                        "Fictional completion record: access panel replaced, safety checks completed, and the work order submitted for client approval."),
                     DemoDataIds
                         .NorthsideTechnicianUser,
                     "Northside Technician",

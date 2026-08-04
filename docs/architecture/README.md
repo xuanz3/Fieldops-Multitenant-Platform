@@ -1,5 +1,10 @@
-# Architecture Documentation
+# Architecture
 
-This directory contains system context, component boundaries, data models, tenant isolation design and workflow diagrams.
+The architecture documentation covers the main data, role and workflow boundaries.
 
-The initial architecture is a modular monolith. This keeps local development and deployment realistic for a student portfolio while preserving clear domain and infrastructure boundaries.
+- (tenant-data-model.md)
+- (tenant-data-boundaries.md)
+- (role-permission-matrix.md)
+- (work-order-state-machine.md)
+
+Implementation decisions are recorded in [Architecture Decision Records](../decisions/).

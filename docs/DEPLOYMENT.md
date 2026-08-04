@@ -58,9 +58,9 @@ docker compose \
 
 Only the web port is published.
 
-## Production concerns outside this portfolio
+## Additional production controls
 
-A real public deployment should additionally provide:
+A public deployment should additionally provide:
 
 - HTTPS termination
 - managed secret storage

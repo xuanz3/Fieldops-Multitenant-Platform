@@ -1,4 +1,4 @@
-# Work Order State Machine
+# Work-Order State Machine
 
 ```mermaid
 stateDiagram-v2
@@ -13,4 +13,11 @@ stateDiagram-v2
     Reopened --> Assigned
 ```
 
-The domain model rejects undefined transitions. For example, a newly submitted request cannot be marked completed without assignment, work and client approval.
+## Transition Ownership
+
+- Tenant Admin or Dispatcher assigns and cancels work.
+- The assigned Technician starts work and submits completion details.
+- The linked Client approves or reopens submitted work.
+- Reopened work returns to Dispatcher control before reassignment.
+
+Every write requires the current work-order `Version`. Undefined or stale transitions are rejected.

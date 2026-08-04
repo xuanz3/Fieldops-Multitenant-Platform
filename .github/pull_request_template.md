@@ -1,26 +1,27 @@
+# Pull Request
+
 ## Summary
 
-Describe the user or engineering outcome.
+Describe the user-facing or engineering outcome.
 
-## Linked issue
+## Related issue
 
 Closes #
 
 ## Changes
 
-- 
+Describe the main implementation changes.
 
 ## Validation
 
-- [ ] Backend build/tests
-- [ ] Frontend lint/build/tests
-- [ ] Security and tenant-boundary impact reviewed
-- [ ] Documentation updated
+| Check | Result |
+|---|---|
+| Backend build and tests | |
+| PostgreSQL integration tests | |
+| Frontend lint, tests and build | |
+| Security and tenant-boundary review | |
+| Documentation review | |
 
 ## Risk and rollback
 
-Describe likely failure modes and how this change can be reverted.
-
-## Evidence
-
-Add sanitised screenshots, test output or report links when relevant.
+Describe likely failure modes and the rollback approach.

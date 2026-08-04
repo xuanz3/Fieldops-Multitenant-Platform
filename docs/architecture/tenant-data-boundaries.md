@@ -1,29 +1,35 @@
 # Tenant Data Boundaries
 
-## Meaning of a tenant
+## Tenant Identity
 
-A tenant represents one customer organisation using FieldOps Hub. Two tenants share the same application and PostgreSQL server, but their business records must remain isolated.
+A tenant represents one organisation using FieldOps Hub. Multiple tenants share the application and PostgreSQL database, while business records remain isolated.
 
-## Tenant-scoped data
+Authenticated requests derive tenant identity from the validated `tenant_id` JWT claim. Query strings, request bodies and custom headers are not accepted as tenant-authority sources.
 
-The following records must carry a non-null `TenantId`:
+## Tenant-Owned Records
 
-- Customer
-- WorkOrder
-- Future assignment, attachment, notification and audit records
+The following records carry a non-null `TenantId`:
 
-## Access rule
+- User accounts
+- Customers
+- Work orders
+- Work-order attachments
+- Audit events
 
-A request may only read or modify records whose `TenantId` matches the trusted tenant context selected by the backend. The browser must never be trusted to choose an arbitrary tenant identifier.
+## Enforcement Layers
 
-## Planned enforcement layers
+1. Domain entities require tenant ownership.
+2. Authentication supplies a signed tenant identity.
+3. API policies enforce role and ownership rules.
+4. Entity Framework Core query filters apply tenant scoping.
+5. Composite database relationships prevent cross-tenant references.
+6. Tenant-scoped uniqueness constraints protect business identifiers.
+7. Integration tests verify that cross-tenant reads and writes fail.
 
-1. Domain ownership: tenant-scoped entities require `TenantId`.
-2. Application query filtering: Entity Framework Core automatically adds the active tenant condition.
-3. Database relationships: composite keys prevent a work order from referencing another tenant’s customer.
-4. Uniqueness rules: business references are unique inside one tenant, not globally.
-5. Automated negative tests: cross-tenant reads and writes must fail.
+## Administrative Access
 
-## Important limitation
+Tenant Admin permissions remain inside the authenticated tenant. Administrative access does not bypass the tenant boundary.
 
-An Entity Framework query filter is a safety layer, not complete security by itself. Raw SQL, administrative tools or incorrectly configured background jobs could bypass it. Database constraints and later authorization checks provide additional defence.
+## Limitation
+
+Query filters are one part of the boundary. Raw SQL, background processing and database administration must preserve the same tenant constraints.
