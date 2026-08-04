@@ -29,4 +29,4 @@ The API exposes read-only listing and full-chain verification. No update or dele
 
 Application code cannot silently edit prior audit records, and direct database mutation is rejected. The chain verifier detects sequence gaps, previous-hash mismatches and event-content changes.
 
-This provides tamper-evident portfolio evidence. A production compliance system would additionally export hashes to an external trust boundary and define formal retention controls.
+This provides tamper-evident project evidence. A production compliance system would additionally export hashes to an external trust boundary and define formal retention controls.

@@ -15,7 +15,7 @@ Use one PostgreSQL database and shared tables. Tenant-owned rows contain `Tenant
 
 - Works locally without paid infrastructure
 - Uses standard PostgreSQL rather than one cloud vendor’s proprietary feature
-- Keeps deployment and backup procedures simple for a portfolio project
+- Keeps deployment and backup procedures simple for the current deployment model
 - Still allows meaningful isolation tests and database constraints
 
 ## Consequences

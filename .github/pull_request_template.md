@@ -8,14 +8,14 @@ Closes #
 
 ## Changes
 
-- 
+-
 
 ## Validation
 
-- [ ] Backend build/tests
-- [ ] Frontend lint/build/tests
-- [ ] Security and tenant-boundary impact reviewed
-- [ ] Documentation updated
+- Backend build/tests
+- Frontend lint/build/tests
+- Security and tenant-boundary impact reviewed
+- Documentation updated
 
 ## Risk and rollback
 

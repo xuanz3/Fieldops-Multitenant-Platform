@@ -27,8 +27,8 @@ Deployment secrets are supplied through an external environment file and are nev
 
 ## Portability
 
-`deploy/docker-compose.production.yml` runs on a local workstation or a Linux virtual machine with Docker Compose. This demonstrates a production-style deployment boundary without claiming that the portfolio instance is a permanently hosted public service.
+`deploy/docker-compose.production.yml` runs on a local workstation or a Linux virtual machine with Docker Compose. This demonstrates a production-style deployment boundary without claiming that the reference deployment is a permanently hosted public service.
 
 ## Consequences
 
-The final portfolio can prove build, startup, migration, health and service isolation with no cloud charge. Public HTTPS hosting, managed secrets, backups, observability and managed PostgreSQL remain environment-specific production concerns.
+The final project can prove build, startup, migration, health and service isolation with no cloud charge. Public HTTPS hosting, managed secrets, backups, observability and managed PostgreSQL remain environment-specific production concerns.

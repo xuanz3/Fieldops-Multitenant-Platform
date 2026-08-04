@@ -1,37 +1,43 @@
-# Project Charter
+# Project Scope
 
 ## Problem
 
-Small field service businesses need a reliable way to receive service requests, assign technicians, track work and retain an auditable record without exposing one organisation's data to another.
+Field-service teams need a reliable way to receive requests, assign technicians, track execution and retain an auditable record without exposing one organisation's data to another.
 
-## Product scope
+## Roles
 
-FieldOps Hub will provide a multi-tenant web application for four roles:
+| Role | Responsibilities |
+|---|---|
+| Tenant Admin | Tenant-wide users, audit and reporting |
+| Dispatcher | Customers, work orders and assignments |
+| Technician | Assigned work, status updates and completion files |
+| Client | Linked work-order review and approval |
 
-- Tenant Admin: organisation settings, users, audit and reporting
-- Dispatcher: customers, work orders, priority and assignments
-- Technician: assigned work, status updates, notes and attachments
-- Client: request submission, progress visibility and completion approval
+## Included
 
-## Core workflow
+- Multi-tenant data model
+- Authentication and role policies
+- Customer and work-order management
+- Assignment and completion workflow
+- Work-order attachments
+- Audit history
+- Operational reports
+- Automated tests
+- Local and container deployment
 
-Client submits request → Dispatcher assigns technician → Technician performs work → Client approves or reopens → Tenant Admin reviews operations and audit records.
+## Excluded
 
-## Repository foundation scope
-
-- Repository governance and planning
-- Modular backend and frontend foundations
-- Initial domain workflow model
-- PostgreSQL development environment
-- Continuous integration
-
-## Non-goals
-
-Repository foundation does not implement production authentication, billing, maps, SMS, mobile applications, microservices, Kubernetes or long-running paid cloud infrastructure.
+- Billing
+- SMS delivery
+- Native mobile applications
+- Public cloud hosting
+- Object-storage malware scanning
+- MFA
+- Managed backups
+- Kubernetes
 
 ## Constraints
 
-- Free and open-source local tools are preferred
-- Demonstration data must be fictional
-- No secrets or personal data may be committed
-- Work must be traceable through issues, commits and pull requests
+- Demonstration data is fictional.
+- Secrets and personal information are not committed.
+- Changes are reviewed through pull requests and automated checks.

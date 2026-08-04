@@ -5,7 +5,7 @@
 
 ## Context
 
-The platform needs clear business modules, automated testing and deployment evidence, but does not need independent service scaling during the portfolio stage.
+The platform needs clear business modules, automated testing and deployment evidence, but does not need independent service scaling at the current scale.
 
 ## Decision
 

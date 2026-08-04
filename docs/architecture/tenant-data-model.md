@@ -1,4 +1,4 @@
-# Multi-tenant data foundation Data Model
+# Tenant Data Model
 
 ```mermaid
 erDiagram

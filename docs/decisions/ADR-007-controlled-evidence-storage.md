@@ -6,7 +6,7 @@ Accepted in Evidence, audit and reporting.
 
 ## Decision
 
-FieldOps stores small portfolio demonstration attachments directly in PostgreSQL together with immutable metadata:
+FieldOps stores small project demonstration attachments directly in PostgreSQL together with immutable metadata:
 
 - WorkOrder and Tenant identity
 - original safe file name

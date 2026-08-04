@@ -17,5 +17,5 @@ The production deployment will preserve the same `/api` path through a reverse p
 - The frontend can call authenticated APIs without embedding a separate backend origin.
 - The token is cleared when the tab closes.
 - A 401 or 403 is surfaced explicitly to the operator.
-- The current approach is suitable for the portfolio demonstration.
+- The current approach is suitable for the project demonstration.
 - A production-grade deployment should prefer a secure HTTP-only cookie or a dedicated identity provider.
