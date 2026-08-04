@@ -1,4 +1,4 @@
-# Phase 2 Data Model
+# Multi-tenant data foundation Data Model
 
 ```mermaid
 erDiagram
@@ -46,4 +46,4 @@ erDiagram
 - `Version` supports later optimistic concurrency handling.
 - Timestamps use UTC.
 
-The diagram is intentionally limited to Phase 2. Users, roles, assignments, attachments and audit events are added in later phases.
+The diagram is intentionally limited to Multi-tenant data foundation. Users, roles, assignments, attachments and audit events are added in later phases.

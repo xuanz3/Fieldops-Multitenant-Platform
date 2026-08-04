@@ -1,4 +1,4 @@
-# ADR-006 — Derive Tenant Context from a Signed Access Token
+# ADR-003 — Derive Tenant Context from a Signed Access Token
 
 ## Status
 

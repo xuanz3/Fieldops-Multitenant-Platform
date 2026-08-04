@@ -139,8 +139,8 @@ All accounts and operational records are fictional.
 - [Portfolio guide](docs/PORTFOLIO.md)
 - [Final validation](docs/FINAL_VALIDATION.md)
 - [Final evidence index](docs/evidence/final/README.md)
-- [Phase 8 summary](docs/phases/phase-08-final-deployment-portfolio.md)
-- [Production deployment decision](docs/decisions/ADR-012-production-container-deployment.md)
+- [Production release summary](docs/phases/phase-08-final-deployment-portfolio.md)
+- [Production deployment decision](docs/decisions/ADR-009-production-container-deployment.md)
 - [v1.0.0 release notes](docs/releases/v1.0.0.md)
 
 ## Scope and limitations

@@ -18,8 +18,8 @@ import { ReportsPage } from './pages/ReportsPage'
 import { TechnicianPage } from './pages/TechnicianPage'
 import { WorkOrdersPage } from './pages/WorkOrdersPage'
 import './App.css'
-import './phase6.css'
-import './phase7.css'
+import './workflow.css'
+import './evidence-reporting.css'
 
 function App() {
   return (

@@ -1,8 +1,8 @@
-# ADR-010: Controlled Evidence Storage
+# ADR-007: Controlled Evidence Storage
 
 ## Status
 
-Accepted in Phase 7.
+Accepted in Evidence, audit and reporting.
 
 ## Decision
 

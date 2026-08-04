@@ -1,8 +1,8 @@
-# ADR-007: Tenant-Safe REST Boundaries and Work Order Concurrency
+# ADR-004: Tenant-Safe REST Boundaries and Work Order Concurrency
 
 ## Status
 
-Accepted in Phase 4.
+Accepted in Customer and work-order API.
 
 ## Decision
 

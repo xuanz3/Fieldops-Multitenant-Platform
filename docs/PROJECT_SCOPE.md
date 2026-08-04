@@ -17,7 +17,7 @@ FieldOps Hub will provide a multi-tenant web application for four roles:
 
 Client submits request → Dispatcher assigns technician → Technician performs work → Client approves or reopens → Tenant Admin reviews operations and audit records.
 
-## Phase 1 scope
+## Repository foundation scope
 
 - Repository governance and planning
 - Modular backend and frontend foundations
@@ -27,7 +27,7 @@ Client submits request → Dispatcher assigns technician → Technician performs
 
 ## Non-goals
 
-Phase 1 does not implement production authentication, billing, maps, SMS, mobile applications, microservices, Kubernetes or long-running paid cloud infrastructure.
+Repository foundation does not implement production authentication, billing, maps, SMS, mobile applications, microservices, Kubernetes or long-running paid cloud infrastructure.
 
 ## Constraints
 

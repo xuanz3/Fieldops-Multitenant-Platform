@@ -1,8 +1,8 @@
-# ADR-008: Browser Session and Same-Origin API Proxy
+# ADR-005: Browser Session and Same-Origin API Proxy
 
 ## Status
 
-Accepted in Phase 5.
+Accepted in Web application.
 
 ## Decision
 

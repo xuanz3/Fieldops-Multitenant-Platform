@@ -1,8 +1,8 @@
-# ADR-009: Role-Owned Operational Workflow
+# ADR-006: Role-Owned Operational Workflow
 
 ## Status
 
-Accepted in Phase 6.
+Accepted in Operational workflow.
 
 ## Decision
 
@@ -24,4 +24,4 @@ Composite Tenant foreign keys protect Customer-to-Client and WorkOrder-to-Techni
 - A Technician cannot act on another Technician's assignment.
 - A Client cannot view or decide work for an unrelated Customer.
 - Reopened work returns to Dispatcher control and clears the previous Technician assignment.
-- Workflow history currently remains on the WorkOrder record; a separate immutable audit event model is deferred to Phase 7.
+- Workflow history currently remains on the WorkOrder record; a separate immutable audit event model is deferred to Evidence, audit and reporting.

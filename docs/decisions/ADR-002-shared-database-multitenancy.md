@@ -1,4 +1,4 @@
-# ADR-005: Shared PostgreSQL Database with Tenant-Scoped Rows
+# ADR-002: Shared PostgreSQL Database with Tenant-Scoped Rows
 
 - Status: Accepted
 - Date: 2026-07-30

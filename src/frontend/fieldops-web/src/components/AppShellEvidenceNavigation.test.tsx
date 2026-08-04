@@ -78,7 +78,7 @@ function renderRole(
 }
 
 describe(
-  'Phase 7 navigation',
+  'Evidence, audit and reporting navigation',
   () => {
     it('shows evidence, audit and reports to Dispatcher', () => {
       renderRole('Dispatcher')

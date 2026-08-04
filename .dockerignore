@@ -5,6 +5,3 @@
 **/obj
 **/node_modules
 **/dist
-docs/evidence/final
-docs/evidence/video-runtime
-docs/evidence/*.webm

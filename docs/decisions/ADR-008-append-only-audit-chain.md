@@ -1,8 +1,8 @@
-# ADR-011: Append-Only Tenant Audit Chain
+# ADR-008: Append-Only Tenant Audit Chain
 
 ## Status
 
-Accepted in Phase 7.
+Accepted in Evidence, audit and reporting.
 
 ## Decision
 

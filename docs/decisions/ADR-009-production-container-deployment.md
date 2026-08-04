@@ -1,8 +1,8 @@
-# ADR-012: Production Container Deployment
+# ADR-009: Production Container Deployment
 
 ## Status
 
-Accepted in Phase 8.
+Accepted in Production release.
 
 ## Decision
 
